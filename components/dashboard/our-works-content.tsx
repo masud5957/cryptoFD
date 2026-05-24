@@ -35,25 +35,31 @@ import {
   Globe,
 } from "lucide-react"
 
-// Generate 7 months of realistic trading data
+// Seeded random for consistent data generation
+function seededRandom(seed: number) {
+  const x = Math.sin(seed) * 10000
+  return x - Math.floor(x)
+}
+
+// Generate 7 months of realistic trading data (deterministic)
 function generateMonthlyProfitData() {
   const months = ["Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025"]
   let cumulativeProfit = 0
   
   return months.map((month, index) => {
-    const monthlyProfit = 150000 + Math.random() * 100000 + (index * 20000)
+    const monthlyProfit = 150000 + seededRandom(index * 7 + 1) * 100000 + (index * 20000)
     cumulativeProfit += monthlyProfit
     return {
       month,
       profit: Math.round(monthlyProfit),
       cumulative: Math.round(cumulativeProfit),
-      trades: Math.floor(1200 + Math.random() * 800 + (index * 100)),
-      winRate: Math.round(72 + Math.random() * 8),
+      trades: Math.floor(1200 + seededRandom(index * 7 + 2) * 800 + (index * 100)),
+      winRate: Math.round(72 + seededRandom(index * 7 + 3) * 8),
     }
   })
 }
 
-// Generate realistic crypto price data for the past 7 months (daily data)
+// Generate realistic crypto price data for the past 7 months (deterministic)
 function generateCryptoData(basePrices: { btc: number; eth: number; bnb: number; sol: number }) {
   const data = []
   const startDate = new Date("2024-11-01")
@@ -67,11 +73,11 @@ function generateCryptoData(basePrices: { btc: number; eth: number; bnb: number;
     const date = new Date(startDate)
     date.setDate(startDate.getDate() + i)
     
-    // Simulate realistic price movements
-    btcPrice = btcPrice * (1 + (Math.random() - 0.48) * 0.03)
-    ethPrice = ethPrice * (1 + (Math.random() - 0.48) * 0.035)
-    bnbPrice = bnbPrice * (1 + (Math.random() - 0.47) * 0.025)
-    solPrice = solPrice * (1 + (Math.random() - 0.46) * 0.04)
+    // Simulate realistic price movements using seeded random
+    btcPrice = btcPrice * (1 + (seededRandom(i * 4 + 1) - 0.48) * 0.03)
+    ethPrice = ethPrice * (1 + (seededRandom(i * 4 + 2) - 0.48) * 0.035)
+    bnbPrice = bnbPrice * (1 + (seededRandom(i * 4 + 3) - 0.47) * 0.025)
+    solPrice = solPrice * (1 + (seededRandom(i * 4 + 4) - 0.46) * 0.04)
     
     data.push({
       date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
@@ -85,7 +91,26 @@ function generateCryptoData(basePrices: { btc: number; eth: number; bnb: number;
   return data
 }
 
-// Generate live trading activity
+// Static initial trading activity (no random values for SSR)
+const initialTradingActivity = [
+  { id: 1, crypto: "BTC", action: "BUY", amount: 32456.78, profit: null, time: "--:--:--", status: "completed" },
+  { id: 2, crypto: "ETH", action: "SELL", amount: 18234.50, profit: 856.23, time: "--:--:--", status: "completed" },
+  { id: 3, crypto: "SOL", action: "BUY", amount: 12890.00, profit: null, time: "--:--:--", status: "completed" },
+  { id: 4, crypto: "BNB", action: "SELL", amount: 8765.43, profit: 423.10, time: "--:--:--", status: "completed" },
+  { id: 5, crypto: "XRP", action: "BUY", amount: 15432.10, profit: null, time: "--:--:--", status: "completed" },
+  { id: 6, crypto: "ADA", action: "SELL", amount: 9876.54, profit: 312.45, time: "--:--:--", status: "completed" },
+  { id: 7, crypto: "ETH", action: "BUY", amount: 22345.67, profit: null, time: "--:--:--", status: "completed" },
+  { id: 8, crypto: "BTC", action: "SELL", amount: 45678.90, profit: 1234.56, time: "--:--:--", status: "completed" },
+  { id: 9, crypto: "DOGE", action: "BUY", amount: 5432.10, profit: null, time: "--:--:--", status: "completed" },
+  { id: 10, crypto: "AVAX", action: "SELL", amount: 7654.32, profit: 567.89, time: "--:--:--", status: "completed" },
+  { id: 11, crypto: "SOL", action: "SELL", amount: 11234.56, profit: 678.90, time: "--:--:--", status: "completed" },
+  { id: 12, crypto: "BNB", action: "BUY", amount: 13456.78, profit: null, time: "--:--:--", status: "completed" },
+  { id: 13, crypto: "ETH", action: "SELL", amount: 19876.54, profit: 945.67, time: "--:--:--", status: "completed" },
+  { id: 14, crypto: "BTC", action: "BUY", amount: 38765.43, profit: null, time: "--:--:--", status: "completed" },
+  { id: 15, crypto: "XRP", action: "SELL", amount: 6543.21, profit: 234.56, time: "--:--:--", status: "completed" },
+]
+
+// Generate live trading activity (client-side only)
 function generateTradingActivity() {
   const cryptos = ["BTC", "ETH", "BNB", "SOL", "XRP", "ADA", "DOGE", "AVAX"]
   const actions = ["BUY", "SELL"]
@@ -133,7 +158,8 @@ const portfolioAllocation = [
 export function OurWorksContent() {
   const [monthlyData] = useState(() => generateMonthlyProfitData())
   const [cryptoData] = useState(() => generateCryptoData({ btc: 68000, eth: 3200, bnb: 580, sol: 120 }))
-  const [tradingActivity, setTradingActivity] = useState(() => generateTradingActivity())
+  const [tradingActivity, setTradingActivity] = useState(initialTradingActivity)
+  const [isHydrated, setIsHydrated] = useState(false)
   const [liveStats, setLiveStats] = useState({
     totalProfit: 1247832.45,
     todayProfit: 18432.67,
@@ -141,8 +167,16 @@ export function OurWorksContent() {
     winRate: 76.4,
   })
 
-  // Simulate live updates
+  // Hydrate with live data after mount
   useEffect(() => {
+    setIsHydrated(true)
+    setTradingActivity(generateTradingActivity())
+  }, [])
+
+  // Simulate live updates (only after hydration)
+  useEffect(() => {
+    if (!isHydrated) return
+    
     const interval = setInterval(() => {
       setTradingActivity(generateTradingActivity())
       setLiveStats(prev => ({
@@ -154,7 +188,7 @@ export function OurWorksContent() {
     }, 5000)
     
     return () => clearInterval(interval)
-  }, [])
+  }, [isHydrated])
 
   const totalTrades = monthlyData.reduce((acc, m) => acc + m.trades, 0)
   const avgWinRate = Math.round(monthlyData.reduce((acc, m) => acc + m.winRate, 0) / monthlyData.length)
