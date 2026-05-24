@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation"
-import { getCurrentUser } from "@/lib/auth"
-import { isAdmin } from "@/lib/admin-queries"
+import { isAdminAuthenticated } from "@/lib/admin-auth"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { AdminNavbar } from "@/components/admin/admin-navbar"
 
@@ -9,15 +8,10 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const user = await getCurrentUser()
+  const isAuthenticated = await isAdminAuthenticated()
   
-  if (!user) {
-    redirect("/auth/login")
-  }
-
-  const admin = await isAdmin()
-  if (!admin) {
-    redirect("/dashboard")
+  if (!isAuthenticated) {
+    redirect("/admin/login")
   }
 
   return (

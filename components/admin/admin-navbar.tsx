@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { adminLogout } from "@/lib/admin-auth"
 import {
   LayoutDashboard,
   Users,
@@ -16,10 +17,13 @@ import {
   Menu,
   ArrowDownToLine,
   ArrowUpFromLine,
+  BarChart3,
+  LogOut,
 } from "lucide-react"
 
 const navigation = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
+  { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "All Transactions", href: "/admin/transactions", icon: Receipt },
   { name: "Pending Deposits", href: "/admin/deposits", icon: ArrowDownToLine },
@@ -30,7 +34,16 @@ const navigation = [
 
 export function AdminNavbar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    await adminLogout()
+    router.push("/admin/login")
+    router.refresh()
+  }
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-card px-4 md:px-6">
@@ -69,14 +82,14 @@ export function AdminNavbar() {
                   </Link>
                 )
               })}
-              <Link
-                href="/dashboard"
-                onClick={() => setOpen(false)}
-                className="mt-4 flex items-center gap-3 rounded-xl border-t border-border px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="mt-4 flex w-full items-center gap-3 rounded-xl border-t border-border px-4 py-3 text-sm font-medium text-red-500 transition-colors hover:bg-red-500/10"
               >
-                <LayoutDashboard className="h-5 w-5" />
-                Back to Dashboard
-              </Link>
+                <LogOut className="h-5 w-5" />
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </button>
             </nav>
           </SheetContent>
         </Sheet>
@@ -97,11 +110,16 @@ export function AdminNavbar() {
 
       {/* Right Actions */}
       <div className="flex items-center gap-2">
-        <Link href="/dashboard">
-          <Button variant="outline" size="sm">
-            Exit Admin
-          </Button>
-        </Link>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Button>
       </div>
     </header>
   )
