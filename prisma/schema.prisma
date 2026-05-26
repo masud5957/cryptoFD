@@ -195,3 +195,27 @@ model BlockTracker {
 
   @@map("block_tracker")
 }
+
+// Trading stats for "Our Works" page - stores cumulative trading profit
+model TradingStats {
+  id              String   @id @default("main")
+  totalProfit     Decimal  @default(0) @map("total_profit") @db.Decimal(18, 2)
+  totalTrades     Int      @default(0) @map("total_trades")
+  winRate         Decimal  @default(76.5) @map("win_rate") @db.Decimal(5, 2)
+  lastUpdated     DateTime @default(now()) @map("last_updated")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("trading_stats")
+}
+
+// Daily trading records for historical data
+model TradingDailyRecord {
+  id          String   @id @default(uuid())
+  date        DateTime @unique @db.Date
+  profit      Decimal  @db.Decimal(18, 2)
+  trades      Int
+  winRate     Decimal  @map("win_rate") @db.Decimal(5, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("trading_daily_records")
+}
