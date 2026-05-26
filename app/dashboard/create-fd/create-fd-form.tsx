@@ -95,9 +95,11 @@ export function CreateFDForm({ plans, availableBalance }: CreateFDFormProps) {
   const selectedPlan = plans.find((p) => p.id === selectedPlanId)
   const amountNum = parseFloat(amount) || 0
   
-  // Calculate estimated returns (daily ROI * days)
-  const totalROI = selectedPlan ? (amountNum * selectedPlan.dailyRoi * selectedPlan.durationDays) / 100 : 0
+  // Calculate estimated returns
+  const dailyEarning = selectedPlan ? (amountNum * selectedPlan.dailyRoi) / 100 : 0
+  const totalROI = selectedPlan ? dailyEarning * selectedPlan.durationDays : 0
   const totalReturn = amountNum + totalROI
+  const totalROIPercentage = selectedPlan ? selectedPlan.dailyRoi * selectedPlan.durationDays : 0
 
   const handleSubmit = async () => {
     if (!selectedPlanId || amountNum <= 0) return
@@ -280,29 +282,60 @@ export function CreateFDForm({ plans, availableBalance }: CreateFDFormProps) {
         {/* Calculated Returns */}
         {selectedPlan && amountNum > 0 && (
           <div className="mt-6 rounded-xl bg-secondary/30 p-4">
-            <h4 className="text-sm font-medium text-muted-foreground">Estimated Returns</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium text-muted-foreground">Estimated Returns</h4>
+              <Badge variant="secondary" className="text-emerald-600 bg-emerald-500/10">
+                {totalROIPercentage.toFixed(0)}% Total ROI
+              </Badge>
+            </div>
             
-            <div className="mt-3 space-y-2">
+            <div className="mt-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Principal Amount</span>
-                <span className="font-medium text-foreground">${amountNum.toFixed(2)} USDT</span>
+                <span className="font-medium text-foreground">${amountNum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT</span>
               </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Daily ROI Rate</span>
+                <span className="font-medium text-foreground">{selectedPlan.dailyRoi}% per day</span>
+              </div>
+              
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Daily Earning</span>
                 <span className="font-medium text-green-500">
-                  +${((amountNum * selectedPlan.dailyRoi) / 100).toFixed(2)} USDT
+                  +${dailyEarning.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
                 </span>
               </div>
+              
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Total Interest ({selectedPlan.durationDays} days)</span>
-                <span className="font-medium text-green-500">+${totalROI.toFixed(2)} USDT</span>
+                <span className="text-sm text-muted-foreground">Duration</span>
+                <span className="font-medium text-foreground">{selectedPlan.durationDays} days</span>
               </div>
-              <div className="border-t border-border pt-2">
+              
+              <div className="flex items-center justify-between text-emerald-600">
+                <span className="text-sm">Total Interest Earned</span>
+                <span className="font-semibold">
+                  +${totalROI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+                </span>
+              </div>
+              
+              <div className="border-t border-border pt-3 mt-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">Total Returns</span>
-                  <span className="text-lg font-bold text-foreground">${totalReturn.toFixed(2)} USDT</span>
+                  <div>
+                    <span className="text-sm font-medium text-foreground">Total Returns</span>
+                    <p className="text-xs text-muted-foreground">Principal + Interest after {selectedPlan.durationDays} days</p>
+                  </div>
+                  <span className="text-xl font-bold text-foreground">${totalReturn.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT</span>
                 </div>
               </div>
+            </div>
+            
+            {/* Calculation breakdown */}
+            <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+              <p className="text-xs text-muted-foreground">
+                <span className="font-medium">Calculation:</span>{" "}
+                ${amountNum.toLocaleString()} × {selectedPlan.dailyRoi}% × {selectedPlan.durationDays} days = ${totalROI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} interest
+              </p>
             </div>
           </div>
         )}
