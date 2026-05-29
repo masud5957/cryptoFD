@@ -38,3 +38,11 @@ export async function isAdminAuthenticated(): Promise<boolean> {
   const session = cookieStore.get(ADMIN_SESSION_TOKEN)
   return session?.value === "authenticated"
 }
+
+// Use this in admin server actions to verify admin access
+export async function requireAdminSession(): Promise<void> {
+  const isAuthenticated = await isAdminAuthenticated()
+  if (!isAuthenticated) {
+    throw new Error("Admin authentication required")
+  }
+}

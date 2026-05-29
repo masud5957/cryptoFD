@@ -4,7 +4,6 @@ import { sendGas } from "./gasService";
 import { executeSweeps } from "./sweepExecutor";
 import { processWithdrawals } from "./withdrawalExecutor";
 import { processFDEarnings } from "./fdEarningsProcessor";
-import { sweepToColdWallet } from "./coldWalletSweep";
 
 console.log("========================================");
 console.log("  CryptoFD Backend Worker");
@@ -56,20 +55,10 @@ cron.schedule("0 * * * *", async () => {
   }
 });
 
-// Cold wallet auto-sweep every 5 minutes (when hot wallet > 5000 USDT)
-cron.schedule("*/5 * * * *", async () => {
-  try {
-    await sweepToColdWallet();
-  } catch (err) {
-    console.error("[CRON] Cold wallet sweep error:", err);
-  }
-});
-
 console.log("[Worker] Cron jobs scheduled:");
 console.log("  - Deposit scanner: every 15 seconds");
 console.log("  - Gas service: every 30 seconds");
 console.log("  - Sweep executor: every minute");
 console.log("  - Withdrawal executor: every 60 seconds");
 console.log("  - FD earnings processor: every hour");
-console.log("  - Cold wallet sweep: every 5 minutes (threshold: 5000 USDT)");
 console.log("[Worker] Running...");

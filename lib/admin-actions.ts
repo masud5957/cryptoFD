@@ -1,12 +1,12 @@
 "use server"
 
 import { prisma } from "@/lib/db"
-import { requireAdmin } from "@/lib/auth"
+import { requireAdminSession } from "@/lib/admin-auth"
 import { revalidatePath } from "next/cache"
 
 // Admin balance management
 export async function addUserBalance(userId: string, amount: number, description?: string) {
-  await requireAdmin()
+  await requireAdminSession()
   
   if (amount <= 0) {
     return { error: "Amount must be positive" }
@@ -39,7 +39,7 @@ export async function addUserBalance(userId: string, amount: number, description
 }
 
 export async function deductUserBalance(userId: string, amount: number, description?: string) {
-  await requireAdmin()
+  await requireAdminSession()
   
   if (amount <= 0) {
     return { error: "Amount must be positive" }
@@ -84,7 +84,7 @@ export async function deductUserBalance(userId: string, amount: number, descript
 }
 
 export async function setUserAdmin(userId: string, isAdminStatus: boolean) {
-  await requireAdmin()
+  await requireAdminSession()
   
   await prisma.profile.update({
     where: { id: userId },
@@ -98,7 +98,7 @@ export async function setUserAdmin(userId: string, isAdminStatus: boolean) {
 
 // Toggle user withdrawal access
 export async function toggleUserWithdrawal(userId: string, disabled: boolean) {
-  await requireAdmin()
+  await requireAdminSession()
   
   await prisma.profile.update({
     where: { id: userId },
@@ -119,7 +119,7 @@ export async function createFDPlan(
   dailyRoi: number,
   durationDays: number
 ) {
-  await requireAdmin()
+  await requireAdminSession()
   
   const activeCount = await prisma.fdPlan.count({
     where: { isActive: true }
@@ -162,7 +162,7 @@ export async function updateFDPlan(
   durationDays: number,
   isActive: boolean
 ) {
-  await requireAdmin()
+  await requireAdminSession()
   
   await prisma.fdPlan.update({
     where: { id: planId },
@@ -182,7 +182,7 @@ export async function updateFDPlan(
 }
 
 export async function togglePlanStatus(planId: string, isActive: boolean) {
-  await requireAdmin()
+  await requireAdminSession()
   
   await prisma.fdPlan.update({
     where: { id: planId },
@@ -195,7 +195,7 @@ export async function togglePlanStatus(planId: string, isActive: boolean) {
 }
 
 export async function deleteFDPlan(planId: string) {
-  await requireAdmin()
+  await requireAdminSession()
   
   const activeCount = await prisma.userFd.count({
     where: { planId, status: "active" }
