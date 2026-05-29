@@ -13,11 +13,13 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   BarChart3,
+  TrendingUp,
 } from "lucide-react"
 
 const navigation = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  { name: "Trading Control", href: "/admin/trading-control", icon: TrendingUp },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "All Transactions", href: "/admin/transactions", icon: Receipt },
   { name: "Deposit History", href: "/admin/deposits", icon: ArrowDownToLine },
