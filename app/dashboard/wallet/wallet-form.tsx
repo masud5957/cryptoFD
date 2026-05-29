@@ -82,7 +82,7 @@ export function WalletForm({ availableBalance, savedAddress }: WalletFormProps) 
 
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawAmount)
-    if (!withdrawAddress || !amount || amount < 10) return
+    if (!withdrawAddress || !amount || amount < 50) return
     
     setError(null)
     setIsLoading(true)
@@ -224,7 +224,7 @@ export function WalletForm({ availableBalance, savedAddress }: WalletFormProps) 
                   <ul className="mt-1 list-inside list-disc space-y-1">
                     <li>Only send USDT on BEP-20 (BSC) network to this address</li>
                     <li>This address is uniquely assigned to your account</li>
-                    <li>Minimum deposit: 10 USDT</li>
+                    <li>Minimum deposit: 50 USDT</li>
                     <li>Deposits are credited automatically after blockchain confirmation</li>
                   </ul>
                 </div>
@@ -314,8 +314,9 @@ export function WalletForm({ availableBalance, savedAddress }: WalletFormProps) 
                 <div className="text-sm text-muted-foreground">
                   <p className="font-medium text-yellow-500">Important:</p>
                   <ul className="mt-1 list-inside list-disc space-y-1">
-                    <li>Minimum withdrawal: 10 USDT</li>
-                    <li>Withdrawals are processed within 24 hours</li>
+                    <li>Minimum withdrawal: 50 USDT</li>
+                    <li>Withdrawals are processed instantly (within seconds)</li>
+                    <li>No withdrawals available on weekends (Sat-Sun)</li>
                     <li>Double-check your wallet address</li>
                   </ul>
                 </div>
@@ -323,7 +324,7 @@ export function WalletForm({ availableBalance, savedAddress }: WalletFormProps) 
 
               <Button 
                 className="h-12 w-full text-base" 
-                disabled={!withdrawAddress || !withdrawAmount || parseFloat(withdrawAmount) < 10 || parseFloat(withdrawAmount) > balance || isLoading}
+                disabled={!withdrawAddress || !withdrawAmount || parseFloat(withdrawAmount) < 50 || parseFloat(withdrawAmount) > balance || isLoading}
                 onClick={handleWithdraw}
               >
                 {isLoading ? (

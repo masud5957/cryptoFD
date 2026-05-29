@@ -172,8 +172,8 @@ export async function requestWithdrawal(amount: number, address: string) {
     return { error: "Insufficient balance" }
   }
   
-  if (amount < 10) {
-    return { error: "Minimum withdrawal is 10 USDT" }
+  if (amount < 50) {
+    return { error: "Minimum withdrawal is 50 USDT" }
   }
   
   try {
@@ -216,7 +216,7 @@ export async function requestWithdrawal(amount: number, address: string) {
     revalidatePath("/dashboard/wallet")
     revalidatePath("/dashboard/transactions")
     
-    return { success: true, message: "Withdrawal processing instantly..." }
+    return { success: true, message: "Withdrawal processing instantly (within seconds)..." }
   } catch (error) {
     console.error("Withdrawal error:", error)
     return { error: "Failed to process withdrawal" }

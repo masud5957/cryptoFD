@@ -126,8 +126,8 @@ async function processLog(
   const amount = Number(ethers.formatUnits(log.data, USDT_DECIMALS));
 
   // Minimum deposit check
-  if (amount < 1) {
-    console.log(`[Scanner] Ignoring small deposit: ${amount} USDT`);
+  if (amount < 50) {
+    console.log(`[Scanner] Ignoring deposit below minimum: ${amount} USDT (min: 50 USDT)`);
     return;
   }
 
