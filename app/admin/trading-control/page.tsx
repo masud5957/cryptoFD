@@ -181,7 +181,7 @@ export default function TradingControlPage() {
               <div className="rounded-xl border border-border bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-4">
                 <p className="text-sm text-muted-foreground mb-2">Win Rate</p>
                 <p className="text-3xl font-bold text-amber-500">
-                  {stats.winRate.toFixed(1)}%
+                  {Number(stats.winRate).toFixed(1)}%
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">Success Rate</p>
               </div>
@@ -285,7 +285,7 @@ export default function TradingControlPage() {
                       className="text-lg"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Current: {stats.winRate.toFixed(1)}% (must be 0-100)
+                      Current: {Number(stats.winRate).toFixed(1)}% (must be 0-100)
                     </p>
                   </div>
                 </div>
