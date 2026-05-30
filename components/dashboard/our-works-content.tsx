@@ -125,7 +125,10 @@ function generateTradingActivity() {
     const action = actions[Math.floor(Math.random() * actions.length)]
     const amount = Math.round((Math.random() * 50000 + 5000) * 100) / 100
     const profit = action === "SELL" ? Math.round((Math.random() * 2000 - 200) * 100) / 100 : null
-    const time = new Date(Date.now() - i * 120000 - Math.random() * 60000)
+    const hours = Math.floor(Math.random() * 12)
+    const minutes = Math.floor(Math.random() * 60)
+    const seconds = Math.floor(Math.random() * 60)
+    const time = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
     
     return {
       id: i + 1,
@@ -133,7 +136,7 @@ function generateTradingActivity() {
       action,
       amount,
       profit,
-      time: time.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      time,
       status: "completed",
     }
   })

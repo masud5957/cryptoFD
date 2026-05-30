@@ -21,6 +21,9 @@ export async function GET() {
           todayProfit: 45832.50,
           activeTrades: 24,
           winRate: 76.5,
+          dailyTarget: 400000,
+          dailyTargetMin: 300000,
+          dailyTargetMax: 500000,
         }
       })
     }
@@ -32,6 +35,9 @@ export async function GET() {
       todayProfit: Number(stats.todayProfit),
       activeTrades: stats.activeTrades,
       winRate: Number(stats.winRate),
+      dailyTarget: Number(stats.dailyTarget),
+      dailyTargetMin: Number(stats.dailyTargetMin),
+      dailyTargetMax: Number(stats.dailyTargetMax),
       lastUpdated: stats.lastUpdated,
     })
   } catch (error) {
@@ -45,7 +51,7 @@ export async function POST(request: Request) {
   try {
     await requireAdminSession()
     
-    const { totalProfit, totalTrades, todayProfit, activeTrades, winRate } = await request.json()
+    const { totalProfit, totalTrades, todayProfit, activeTrades, winRate, dailyTarget, dailyTargetMin, dailyTargetMax } = await request.json()
     
     // Validate inputs
     if (typeof totalProfit !== "number" || totalProfit < 0) {
@@ -63,6 +69,15 @@ export async function POST(request: Request) {
     if (typeof winRate !== "number" || winRate < 0 || winRate > 100) {
       return Response.json({ error: "Invalid winRate (0-100)" }, { status: 400 })
     }
+    if (typeof dailyTarget !== "number" || dailyTarget < 0) {
+      return Response.json({ error: "Invalid dailyTarget" }, { status: 400 })
+    }
+    if (typeof dailyTargetMin !== "number" || dailyTargetMin < 0) {
+      return Response.json({ error: "Invalid dailyTargetMin" }, { status: 400 })
+    }
+    if (typeof dailyTargetMax !== "number" || dailyTargetMax < dailyTargetMin) {
+      return Response.json({ error: "Invalid dailyTargetMax" }, { status: 400 })
+    }
     
     // Update or create
     const stats = await prisma.tradingStats.upsert({
@@ -73,6 +88,9 @@ export async function POST(request: Request) {
         todayProfit,
         activeTrades,
         winRate,
+        dailyTarget,
+        dailyTargetMin,
+        dailyTargetMax,
         lastUpdated: new Date(),
       },
       create: {
@@ -82,6 +100,9 @@ export async function POST(request: Request) {
         todayProfit,
         activeTrades,
         winRate,
+        dailyTarget,
+        dailyTargetMin,
+        dailyTargetMax,
       }
     })
     
@@ -95,6 +116,9 @@ export async function POST(request: Request) {
       todayProfit: Number(stats.todayProfit),
       activeTrades: stats.activeTrades,
       winRate: Number(stats.winRate),
+      dailyTarget: Number(stats.dailyTarget),
+      dailyTargetMin: Number(stats.dailyTargetMin),
+      dailyTargetMax: Number(stats.dailyTargetMax),
       lastUpdated: stats.lastUpdated,
     })
   } catch (error) {

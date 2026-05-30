@@ -15,6 +15,9 @@ export default function TradingControlPage() {
     todayProfit: 0,
     activeTrades: 0,
     winRate: 0,
+    dailyTarget: 400000,
+    dailyTargetMin: 300000,
+    dailyTargetMax: 500000,
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -163,7 +166,7 @@ export default function TradingControlPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Display Current Stats */}
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-5">
               <div className="rounded-xl border border-border bg-gradient-to-br from-green-500/5 to-emerald-500/5 p-4">
                 <p className="text-sm text-muted-foreground mb-2">Total Profit</p>
                 <p className="text-3xl font-bold text-green-500">
@@ -194,6 +197,14 @@ export default function TradingControlPage() {
                   {Number(stats.winRate).toFixed(1)}%
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">Success Rate</p>
+              </div>
+
+              <div className="rounded-xl border border-border bg-gradient-to-br from-rose-500/5 to-red-500/5 p-4">
+                <p className="text-sm text-muted-foreground mb-2">Daily Target</p>
+                <p className="text-3xl font-bold text-rose-500">
+                  ${stats.dailyTarget.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">${stats.dailyTargetMin.toLocaleString(undefined, { minimumFractionDigits: 0 })} - ${stats.dailyTargetMax.toLocaleString(undefined, { minimumFractionDigits: 0 })}</p>
               </div>
             </div>
 
@@ -374,6 +385,65 @@ export default function TradingControlPage() {
                       >
                         <Minus className="h-4 w-4" /> 5
                       </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Daily Target */}
+                <div>
+                  <label className="text-sm font-medium text-foreground">Daily Target (USDT)</label>
+                  <div className="mt-2 flex gap-2 items-end">
+                    <div className="flex-1">
+                      <Input
+                        type="number"
+                        value={formData.dailyTarget}
+                        onChange={(e) => setFormData({ ...formData, dailyTarget: parseFloat(e.target.value) || 0 })}
+                        placeholder="400000"
+                        step="1000"
+                        min="0"
+                        className="text-lg"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Current: ${stats.dailyTarget.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Daily Target Range */}
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Minimum Daily Target (USDT)</label>
+                    <div className="mt-2">
+                      <Input
+                        type="number"
+                        value={formData.dailyTargetMin}
+                        onChange={(e) => setFormData({ ...formData, dailyTargetMin: parseFloat(e.target.value) || 0 })}
+                        placeholder="300000"
+                        step="10000"
+                        min="0"
+                        className="text-lg"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Current: ${stats.dailyTargetMin.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Maximum Daily Target (USDT)</label>
+                    <div className="mt-2">
+                      <Input
+                        type="number"
+                        value={formData.dailyTargetMax}
+                        onChange={(e) => setFormData({ ...formData, dailyTargetMax: parseFloat(e.target.value) || 0 })}
+                        placeholder="500000"
+                        step="10000"
+                        min="0"
+                        className="text-lg"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Current: ${stats.dailyTargetMax.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                      </p>
                     </div>
                   </div>
                 </div>

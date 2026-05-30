@@ -204,6 +204,9 @@ model TradingStats {
   todayProfit     Decimal  @default(0) @map("today_profit") @db.Decimal(18, 2)
   activeTrades    Int      @default(0) @map("active_trades")
   winRate         Decimal  @default(76.5) @map("win_rate") @db.Decimal(5, 2)
+  dailyTarget     Decimal  @default(400000) @map("daily_target") @db.Decimal(18, 2)
+  dailyTargetMin  Decimal  @default(300000) @map("daily_target_min") @db.Decimal(18, 2)
+  dailyTargetMax  Decimal  @default(500000) @map("daily_target_max") @db.Decimal(18, 2)
   lastUpdated     DateTime @default(now()) @map("last_updated")
   createdAt       DateTime @default(now()) @map("created_at")
 
