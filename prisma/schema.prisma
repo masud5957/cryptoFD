@@ -224,3 +224,42 @@ model TradingDailyRecord {
 
   @@map("trading_daily_records")
 }
+
+// Live trading activity - shows recent trades
+model TradingActivity {
+  id          String   @id @default(uuid())
+  crypto      String   // BTC, ETH, BNB, etc.
+  action      String   // BUY or SELL
+  amount      Decimal  @db.Decimal(18, 2)
+  profit      Decimal? @db.Decimal(18, 2)
+  status      String   @default("completed") // completed, pending
+  timestamp   DateTime @default(now())
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("trading_activity")
+  @@index([timestamp])
+}
+
+// Portfolio allocation - distribution of capital
+model PortfolioAllocation {
+  id          String   @id @default(uuid())
+  asset       String   @unique // BTC, ETH, Stablecoins, etc.
+  percentage  Int      // 0-100
+  value       Decimal  @db.Decimal(18, 2)
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  @@map("portfolio_allocation")
+}
+
+// Crypto price data for charting
+model CryptoPrice {
+  id          String   @id @default(uuid())
+  crypto      String   // BTC, ETH, BNB, SOL
+  date        DateTime
+  price       Decimal  @db.Decimal(18, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([crypto, date])
+  @@map("crypto_prices")
+  @@index([crypto, date])
+}
