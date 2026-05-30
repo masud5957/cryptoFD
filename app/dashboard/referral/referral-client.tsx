@@ -76,12 +76,11 @@ export function ReferralClient({
     }
   }
 
-  // Fill in default levels if not present (all 5 levels for MLM)
-  const displayLevels = Array.from({ length: 5 }, (_, i) => {
+  // Fill in default levels if not present
+  const displayLevels = Array.from({ length: 3 }, (_, i) => {
     const level = i + 1
     const found = levelEarnings.find((l) => l.level === level)
-    const commissionRates = [15, 10, 8, 5, 2]
-    return found || { level, referrals: 0, earnings: 0, commission: commissionRates[i] }
+    return found || { level, referrals: 0, earnings: 0, commission: level === 1 ? 5 : level === 2 ? 3 : 2 }
   })
 
   return (
@@ -203,52 +202,25 @@ export function ReferralClient({
 
       {/* Level-wise Earnings */}
       <Card className="rounded-2xl border-border bg-card p-6">
-        <h3 className="text-lg font-semibold text-foreground">Earnings by Level (5-Tier System)</h3>
+        <h3 className="text-lg font-semibold text-foreground">Earnings by Level</h3>
         
-        <div className="mt-4 grid gap-3 sm:grid-cols-5">
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
           {displayLevels.map((level) => (
-            <div key={level.level} className="rounded-xl bg-secondary/30 p-4 border border-border/50 hover:border-primary/50 transition">
-              <div className="flex items-center justify-between mb-2">
-                <Badge className={levelColors[level.level]}>L{level.level}</Badge>
-                <span className="text-xs font-bold text-green-500">{level.commission}%</span>
+            <div key={level.level} className="rounded-xl bg-secondary/30 p-4">
+              <div className="flex items-center justify-between">
+                <Badge className={levelColors[level.level]}>Level {level.level}</Badge>
+                <span className="text-xs text-muted-foreground">{level.commission}% Commission</span>
               </div>
-              <div>
-                <p className="text-xl font-bold text-foreground">
-                  ${level.earnings.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              <div className="mt-3">
+                <p className="text-2xl font-bold text-foreground">
+                  ${level.earnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-sm text-muted-foreground">
                   {level.referrals} referrals
                 </p>
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Commission Structure Explanation */}
-        <div className="mt-6 p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
-          <h4 className="font-semibold text-foreground mb-3">MLM Commission Structure</h4>
-          <ul className="space-y-2 text-sm">
-            <li className="flex justify-between">
-              <span className="text-muted-foreground">Level 1 (Direct Referrals):</span>
-              <span className="font-bold text-foreground">15% commission</span>
-            </li>
-            <li className="flex justify-between">
-              <span className="text-muted-foreground">Level 2 (2nd Generation):</span>
-              <span className="font-bold text-foreground">10% commission</span>
-            </li>
-            <li className="flex justify-between">
-              <span className="text-muted-foreground">Level 3 (3rd Generation):</span>
-              <span className="font-bold text-foreground">8% commission</span>
-            </li>
-            <li className="flex justify-between">
-              <span className="text-muted-foreground">Level 4 (4th Generation):</span>
-              <span className="font-bold text-foreground">5% commission</span>
-            </li>
-            <li className="flex justify-between">
-              <span className="text-muted-foreground">Level 5 (5th Generation):</span>
-              <span className="font-bold text-foreground">2% commission</span>
-            </li>
-          </ul>
         </div>
       </Card>
 

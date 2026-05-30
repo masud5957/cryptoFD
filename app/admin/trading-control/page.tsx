@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import React from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,15 +20,9 @@ export default function TradingControlPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   const [formData, setFormData] = useState(stats)
   const [isInitialized, setIsInitialized] = useState(false)
-  
-  // Activities state
-  const [activities, setActivities] = useState<any[]>([])
-  const [addingActivity, setAddingActivity] = useState(false)
-  const [newActivity, setNewActivity] = useState({ crypto: "", action: "", amount: 0, profit: "" as string | number })
 
   useEffect(() => {
     fetchStats()
-    loadActivities()
   }, [])
 
   async function fetchStats() {
@@ -43,52 +36,6 @@ export default function TradingControlPage() {
       setMessage({ type: "error", text: "Failed to fetch trading stats" })
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function loadActivities() {
-    try {
-      const res = await fetch("/api/admin/trading-activities")
-      if (res.ok) {
-        const data = await res.json()
-        setActivities(data)
-      }
-    } catch (error) {
-      console.error("Error loading activities:", error)
-    }
-  }
-
-  async function addActivity() {
-    setAddingActivity(true)
-    try {
-      const res = await fetch("/api/admin/trading-activities", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newActivity),
-      })
-      if (res.ok) {
-        await loadActivities()
-        setNewActivity({ crypto: "", action: "", amount: 0, profit: null })
-      }
-    } catch (error) {
-      console.error("Error adding activity:", error)
-    } finally {
-      setAddingActivity(false)
-    }
-  }
-
-  async function deleteActivity(id: string) {
-    try {
-      const res = await fetch("/api/admin/trading-activities", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      })
-      if (res.ok) {
-        await loadActivities()
-      }
-    } catch (error) {
-      console.error("Error deleting activity:", error)
     }
   }
 
@@ -368,115 +315,6 @@ export default function TradingControlPage() {
               <AlertDescription className="text-blue-500 text-sm">
                 <strong>Live Updates:</strong> Changes appear immediately to users. Historical data is preserved automatically. 
                 Use the +/- buttons for quick adjustments or enter exact values manually.
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-        </Card>
-      )}
-
-      {isInitialized && (
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Live Trading Activities</CardTitle>
-                <CardDescription>Manage trades shown on the "Our Works" page</CardDescription>
-              </div>
-              <Badge variant="secondary">Control Center</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Add New Activity */}
-            <div className="p-4 rounded-lg bg-secondary/30 border border-border space-y-3">
-              <h3 className="font-semibold text-foreground">Add Trading Activity</h3>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                <select 
-                  onChange={(e) => setNewActivity({ ...newActivity, crypto: e.target.value })}
-                  value={newActivity.crypto}
-                  className="px-3 py-2 rounded-lg bg-background border border-border text-foreground"
-                >
-                  <option value="">Select Crypto</option>
-                  <option value="BTC">Bitcoin (BTC)</option>
-                  <option value="ETH">Ethereum (ETH)</option>
-                  <option value="BNB">Binance (BNB)</option>
-                  <option value="SOL">Solana (SOL)</option>
-                  <option value="XRP">Ripple (XRP)</option>
-                  <option value="ADA">Cardano (ADA)</option>
-                </select>
-                <select 
-                  onChange={(e) => setNewActivity({ ...newActivity, action: e.target.value })}
-                  value={newActivity.action}
-                  className="px-3 py-2 rounded-lg bg-background border border-border text-foreground"
-                >
-                  <option value="">Action</option>
-                  <option value="BUY">BUY</option>
-                  <option value="SELL">SELL</option>
-                </select>
-                <input 
-                  type="number" 
-                  placeholder="Amount (USDT)"
-                  value={newActivity.amount}
-                  onChange={(e) => setNewActivity({ ...newActivity, amount: parseFloat(e.target.value) || 0 })}
-                  className="px-3 py-2 rounded-lg bg-background border border-border text-foreground"
-                />
-                <input 
-                  type="number" 
-                  placeholder="Profit (optional)"
-                  value={newActivity.profit}
-                  onChange={(e) => setNewActivity({ ...newActivity, profit: e.target.value })}
-                  className="px-3 py-2 rounded-lg bg-background border border-border text-foreground"
-                />
-                <Button 
-                  onClick={addActivity}
-                  disabled={addingActivity || !newActivity.crypto || !newActivity.action || !newActivity.amount}
-                  className="w-full"
-                >
-                  {addingActivity ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add Activity"}
-                </Button>
-              </div>
-            </div>
-
-            {/* Recent Activities */}
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Recent Activities (Last 10)</h3>
-              <div className="max-h-[400px] overflow-y-auto space-y-2">
-                {activities.length > 0 ? (
-                  activities.slice(0, 10).map((activity) => (
-                    <div key={activity.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/50">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${activity.action === "BUY" ? "bg-emerald-500" : "bg-red-500"}`} />
-                        <div>
-                          <p className="font-medium text-foreground">{activity.crypto} {activity.action}</p>
-                          <p className="text-xs text-muted-foreground">${activity.amount.toLocaleString()}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {activity.profit !== null && (
-                          <p className={`text-sm font-medium ${activity.profit >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-                            {activity.profit >= 0 ? "+" : ""}{activity.profit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                          </p>
-                        )}
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => deleteActivity(activity.id)}
-                          className="text-red-500 hover:text-red-600"
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-center text-muted-foreground py-4">No activities yet</p>
-                )}
-              </div>
-            </div>
-
-            <Alert className="bg-amber-500/10 border-amber-500/20">
-              <AlertCircle className="h-4 w-4 text-amber-500" />
-              <AlertDescription className="text-amber-500 text-sm">
-                <strong>Trading Activities:</strong> These appear on the "Our Works" page as live trades. Add activities to show your trading is active. They will appear to users with a timestamp.
               </AlertDescription>
             </Alert>
           </CardContent>

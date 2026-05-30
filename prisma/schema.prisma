@@ -219,17 +219,3 @@ model TradingDailyRecord {
 
   @@map("trading_daily_records")
 }
-
-// Live trading activities for "Our Works" display
-model TradingActivity {
-  id          String   @id @default(uuid())
-  crypto      String   // e.g., "BTC", "ETH"
-  action      String   // "BUY" or "SELL"
-  amount      Decimal  @db.Decimal(18, 2)
-  profit      Decimal? @db.Decimal(18, 2) // null if still open
-  timestamp   DateTime @default(now())
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  @@map("trading_activities")
-  @@index([timestamp])
-}

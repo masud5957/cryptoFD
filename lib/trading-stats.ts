@@ -147,29 +147,6 @@ export async function updateDailyTradingStats() {
   return { success: true, dailyProfit, dailyTrades }
 }
 
-// Get recent trading activities
-export async function getTradingActivities(limit: number = 20) {
-  try {
-    const activities = await prisma.tradingActivity.findMany({
-      orderBy: { timestamp: "desc" },
-      take: limit,
-    })
-    
-    return activities.map(a => ({
-      id: a.id,
-      crypto: a.crypto,
-      action: a.action,
-      amount: Number(a.amount),
-      profit: a.profit ? Number(a.profit) : null,
-      timestamp: a.timestamp,
-    }))
-  } catch (error) {
-    // Fallback: return empty array if table doesn't exist
-    console.log("[TradingActivities] Table not found, returning empty")
-    return []
-  }
-}
-
 // Initialize historical data for the past 7 months (run once on setup)
 export async function initializeTradingHistory() {
   const existingRecords = await prisma.tradingDailyRecord.count()
