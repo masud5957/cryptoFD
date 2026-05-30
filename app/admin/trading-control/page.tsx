@@ -372,8 +372,9 @@ export default function TradingControlPage() {
             </Alert>
           </CardContent>
         </Card>
+      )}
 
-        {/* Live Trading Activities */}
+      {isInitialized && (
         <Card className="border-border bg-card">
           <CardHeader>
             <div className="flex items-center justify-between">
