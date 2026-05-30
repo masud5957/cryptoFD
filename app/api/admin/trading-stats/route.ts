@@ -23,7 +23,13 @@ export async function GET() {
       })
     }
     
-    return Response.json(stats)
+    // Convert Decimal types to numbers
+    return Response.json({
+      totalProfit: Number(stats.totalProfit),
+      totalTrades: stats.totalTrades,
+      winRate: Number(stats.winRate),
+      lastUpdated: stats.lastUpdated,
+    })
   } catch (error) {
     console.error("Error fetching trading stats:", error)
     return Response.json({ error: "Failed to fetch stats" }, { status: 500 })
@@ -68,7 +74,13 @@ export async function POST(request: Request) {
     revalidatePath("/dashboard/our-works")
     revalidatePath("/admin/trading-control")
     
-    return Response.json(stats)
+    // Return as plain numbers
+    return Response.json({
+      totalProfit: Number(stats.totalProfit),
+      totalTrades: stats.totalTrades,
+      winRate: Number(stats.winRate),
+      lastUpdated: stats.lastUpdated,
+    })
   } catch (error) {
     console.error("Error updating trading stats:", error)
     return Response.json({ error: "Failed to update stats" }, { status: 500 })
