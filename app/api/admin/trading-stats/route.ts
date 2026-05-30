@@ -18,6 +18,8 @@ export async function GET() {
           id: "main",
           totalProfit: 1247832.45,
           totalTrades: 15432,
+          todayProfit: 45832.50,
+          activeTrades: 24,
           winRate: 76.5,
         }
       })
@@ -27,6 +29,8 @@ export async function GET() {
     return Response.json({
       totalProfit: Number(stats.totalProfit),
       totalTrades: stats.totalTrades,
+      todayProfit: Number(stats.todayProfit),
+      activeTrades: stats.activeTrades,
       winRate: Number(stats.winRate),
       lastUpdated: stats.lastUpdated,
     })
@@ -41,7 +45,7 @@ export async function POST(request: Request) {
   try {
     await requireAdminSession()
     
-    const { totalProfit, totalTrades, winRate } = await request.json()
+    const { totalProfit, totalTrades, todayProfit, activeTrades, winRate } = await request.json()
     
     // Validate inputs
     if (typeof totalProfit !== "number" || totalProfit < 0) {
@@ -49,6 +53,12 @@ export async function POST(request: Request) {
     }
     if (typeof totalTrades !== "number" || totalTrades < 0) {
       return Response.json({ error: "Invalid totalTrades" }, { status: 400 })
+    }
+    if (typeof todayProfit !== "number" || todayProfit < 0) {
+      return Response.json({ error: "Invalid todayProfit" }, { status: 400 })
+    }
+    if (typeof activeTrades !== "number" || activeTrades < 0) {
+      return Response.json({ error: "Invalid activeTrades" }, { status: 400 })
     }
     if (typeof winRate !== "number" || winRate < 0 || winRate > 100) {
       return Response.json({ error: "Invalid winRate (0-100)" }, { status: 400 })
@@ -60,6 +70,8 @@ export async function POST(request: Request) {
       update: {
         totalProfit,
         totalTrades,
+        todayProfit,
+        activeTrades,
         winRate,
         lastUpdated: new Date(),
       },
@@ -67,6 +79,8 @@ export async function POST(request: Request) {
         id: "main",
         totalProfit,
         totalTrades,
+        todayProfit,
+        activeTrades,
         winRate,
       }
     })
@@ -78,6 +92,8 @@ export async function POST(request: Request) {
     return Response.json({
       totalProfit: Number(stats.totalProfit),
       totalTrades: stats.totalTrades,
+      todayProfit: Number(stats.todayProfit),
+      activeTrades: stats.activeTrades,
       winRate: Number(stats.winRate),
       lastUpdated: stats.lastUpdated,
     })

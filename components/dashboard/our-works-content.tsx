@@ -157,7 +157,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
   const [liveStats, setLiveStats] = useState({
     totalProfit: initialStats.totalProfit,
     todayProfit: todayProfit.profit,
-    activeTrades: Math.floor(20 + Math.random() * 10),
+    activeTrades: todayProfit.trades,
     winRate: initialStats.winRate,
   })
 
@@ -192,8 +192,8 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
         
         setLiveStats(prev => ({
           totalProfit: data.totalProfit,
-          todayProfit: prev.todayProfit,
-          activeTrades: prev.activeTrades,
+          todayProfit: data.todayProfit || prev.todayProfit,
+          activeTrades: data.activeTrades || prev.activeTrades,
           winRate: data.winRate,
         }))
       } catch (error) {

@@ -12,6 +12,8 @@ export default function TradingControlPage() {
   const [stats, setStats] = useState({
     totalProfit: 0,
     totalTrades: 0,
+    todayProfit: 0,
+    activeTrades: 0,
     winRate: 0,
   })
   const [loading, setLoading] = useState(true)
@@ -161,7 +163,7 @@ export default function TradingControlPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Display Current Stats */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-4">
               <div className="rounded-xl border border-border bg-gradient-to-br from-green-500/5 to-emerald-500/5 p-4">
                 <p className="text-sm text-muted-foreground mb-2">Total Profit</p>
                 <p className="text-3xl font-bold text-green-500">
@@ -176,6 +178,14 @@ export default function TradingControlPage() {
                   {stats.totalTrades.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">Transactions</p>
+              </div>
+
+              <div className="rounded-xl border border-border bg-gradient-to-br from-purple-500/5 to-pink-500/5 p-4">
+                <p className="text-sm text-muted-foreground mb-2">Today&apos;s Profit</p>
+                <p className="text-3xl font-bold text-purple-500">
+                  ${stats.todayProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">USDT</p>
               </div>
 
               <div className="rounded-xl border border-border bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-4">
@@ -287,6 +297,84 @@ export default function TradingControlPage() {
                     <p className="text-xs text-muted-foreground mt-1">
                       Current: {Number(stats.winRate).toFixed(1)}% (must be 0-100)
                     </p>
+                  </div>
+                </div>
+
+                {/* Today's Profit */}
+                <div>
+                  <label className="text-sm font-medium text-foreground">Today&apos;s Profit (USDT)</label>
+                  <div className="mt-2 flex gap-2 items-end">
+                    <div className="flex-1">
+                      <Input
+                        type="number"
+                        value={formData.todayProfit}
+                        onChange={(e) => setFormData({ ...formData, todayProfit: parseFloat(e.target.value) || 0 })}
+                        placeholder="45832.50"
+                        step="0.01"
+                        min="0"
+                        className="text-lg"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Current: ${stats.todayProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFormData({ ...formData, todayProfit: Math.max(0, formData.todayProfit + 10000) })}
+                        title="Add 10,000 USDT"
+                      >
+                        <Plus className="h-4 w-4" /> 10K
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFormData({ ...formData, todayProfit: Math.max(0, formData.todayProfit - 10000) })}
+                        title="Subtract 10,000 USDT"
+                      >
+                        <Minus className="h-4 w-4" /> 10K
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Active Trades */}
+                <div>
+                  <label className="text-sm font-medium text-foreground">Active Trades</label>
+                  <div className="mt-2 flex gap-2 items-end">
+                    <div className="flex-1">
+                      <Input
+                        type="number"
+                        value={formData.activeTrades}
+                        onChange={(e) => setFormData({ ...formData, activeTrades: parseInt(e.target.value) || 0 })}
+                        placeholder="24"
+                        step="1"
+                        min="0"
+                        className="text-lg"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Current: {stats.activeTrades} active now
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFormData({ ...formData, activeTrades: formData.activeTrades + 5 })}
+                        title="Add 5 trades"
+                      >
+                        <Plus className="h-4 w-4" /> 5
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFormData({ ...formData, activeTrades: Math.max(0, formData.activeTrades - 5) })}
+                        title="Subtract 5 trades"
+                      >
+                        <Minus className="h-4 w-4" /> 5
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
