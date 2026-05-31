@@ -154,9 +154,10 @@ const portfolioAllocation = [
 export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: OurWorksContentProps) {
   const [cryptoData] = useState(() => generateCryptoData({ btc: 68000, eth: 3200, bnb: 580, sol: 120 }))
   const [tradingActivity, setTradingActivity] = useState(initialTradingActivity)
+  const [portfolioData, setPortfolioData] = useState(portfolioAllocation)
   const [isHydrated, setIsHydrated] = useState(false)
   
-  // Use database values for stats with small client-side increments for "live" feel
+  // Use database values for stats
   const [liveStats, setLiveStats] = useState({
     totalProfit: initialStats.totalProfit,
     todayProfit: todayProfit.profit,
@@ -183,10 +184,53 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
   // Hydrate with live data after mount
   useEffect(() => {
     setIsHydrated(true)
-    setTradingActivity(generateTradingActivity())
   }, [])
 
-  // Fetch real data from database on mount and refresh every 10 seconds
+  // Fetch trading activity from database
+  useEffect(() => {
+    const fetchTradingActivity = async () => {
+      try {
+        const response = await fetch('/api/admin/trading-data?type=activity&limit=15')
+        const data = await response.json()
+        if (Array.isArray(data) && data.length > 0) {
+          setTradingActivity(data.map((act: any, index: number) => ({
+            id: act.id || index,
+            crypto: act.crypto,
+            action: act.action,
+            amount: Number(act.amount),
+            profit: act.profit ? Number(act.profit) : null,
+            time: new Date(act.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+            status: act.status,
+          })))
+        }
+      } catch (error) {
+        console.error("Failed to fetch trading activity:", error)
+      }
+    }
+
+    // Fetch portfolio from database
+    const fetchPortfolio = async () => {
+      try {
+        const response = await fetch('/api/admin/trading-data?type=portfolio')
+        const data = await response.json()
+        if (Array.isArray(data) && data.length > 0) {
+          const colors = ["#F7931A", "#627EEA", "#F3BA2F", "#9945FF", "#6B7280"]
+          setPortfolioData(data.map((p: any, index: number) => ({
+            name: p.asset,
+            value: p.percentage,
+            color: colors[index % colors.length],
+          })))
+        }
+      } catch (error) {
+        console.error("Failed to fetch portfolio:", error)
+      }
+    }
+
+    fetchTradingActivity()
+    fetchPortfolio()
+  }, [])
+
+  // Fetch real stats from database
   useEffect(() => {
     const fetchTradingData = async () => {
       try {
@@ -204,10 +248,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
       }
     }
 
-    // Fetch immediately on mount
     fetchTradingData()
-
-    // Then refresh every 10 seconds
     const interval = setInterval(fetchTradingData, 10000)
     
     return () => clearInterval(interval)
@@ -350,15 +391,16 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={portfolioAllocation}
+                    data={portfolioData}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
                     outerRadius={100}
+                    fill="#8884d8"
                     paddingAngle={2}
                     dataKey="value"
                   >
-                    {portfolioAllocation.map((entry, index) => (
+                    {portfolioData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -368,6 +410,14 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
                   />
                 </PieChart>
               </ResponsiveContainer>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              {portfolioData.map((item) => (
+                <div key={item.name} className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-sm text-muted-foreground">{item.name} ({item.value}%)</span>
+                </div>
+              ))}
             </div>
             <div className="flex flex-wrap justify-center gap-4 mt-4">
               {portfolioAllocation.map((item) => (

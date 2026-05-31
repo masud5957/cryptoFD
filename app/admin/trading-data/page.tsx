@@ -14,6 +14,27 @@ export default function TradingDataManagement() {
   const [portfolio, setPortfolio] = useState<any[]>([])
   const [prices, setPrices] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Initialize data
+  const initializeData = async () => {
+    if (!window.confirm("This will populate 7 months of historical data. Continue?")) return
+    
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/admin/trading-data/init?action=init', { method: 'POST' })
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(`Data initialized: ${result.stats.dailyRecords} daily records, ${result.stats.trades} trades`)
+        setIsInitialized(true)
+        fetchData()
+      }
+    } catch (error) {
+      toast.error('Failed to initialize data')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   // Activity form
   const [activityForm, setActivityForm] = useState({
@@ -162,9 +183,14 @@ export default function TradingDataManagement() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Trading Data Management</h1>
-          <p className="text-muted-foreground">Manage all trading data shown in "Our Works" section</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Trading Data Management</h1>
+            <p className="text-muted-foreground">Manage all trading data shown in "Our Works" section</p>
+          </div>
+          <Button onClick={initializeData} disabled={isLoading || isInitialized} size="lg" variant="outline">
+            {isLoading ? "Initializing..." : isInitialized ? "✓ Data Initialized" : "Initialize Sample Data"}
+          </Button>
         </div>
 
         <Tabs defaultValue="activity" className="space-y-6">
