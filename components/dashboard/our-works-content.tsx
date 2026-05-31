@@ -159,10 +159,10 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
   
   // Use database values for stats
   const [liveStats, setLiveStats] = useState({
-    totalProfit: initialStats.totalProfit,
-    todayProfit: todayProfit.profit,
-    activeTrades: todayProfit.trades,
-    winRate: initialStats.winRate,
+    totalProfit: initialStats.totalProfit || 0,
+    todayProfit: todayProfit.profit || 0,
+    activeTrades: todayProfit.trades || 0,
+    winRate: initialStats.winRate || 76.5,
   })
 
   // Calculate cumulative data for chart
@@ -320,7 +320,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
           <CardHeader className="pb-2">
             <CardDescription>Win Rate</CardDescription>
             <CardTitle className="text-2xl text-blue-500">
-              {liveStats.winRate.toFixed(1)}%
+              {Number(liveStats.winRate || 0).toFixed(1)}%
             </CardTitle>
           </CardHeader>
           <CardContent>
