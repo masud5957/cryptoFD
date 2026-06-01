@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -19,7 +19,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<"credentials" | "otp">("credentials")
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  // Ensure router is only used after component is mounted
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -49,16 +55,20 @@ export default function LoginPage() {
 
       if (data.requiresVerification) {
         // Redirect to verify email
-        router.push(`/auth/verify?email=${encodeURIComponent(email)}`)
+        if (mounted) {
+          router.push(`/auth/verify?email=${encodeURIComponent(email)}`)
+        }
         return
       }
 
       // Successful login - redirect based on response
-      console.log("[v0] Login successful, redirectTo:", data.redirectTo)
-      const redirectTo = data.redirectTo || "/dashboard"
-      
-      // Use window.location for hard redirect to ensure cookies are sent
-      window.location.href = redirectTo
+      if (mounted) {
+        console.log("[v0] Login successful, redirectTo:", data.redirectTo)
+        const redirectTo = data.redirectTo || "/dashboard"
+        
+        // Use window.location for hard redirect to ensure cookies are sent
+        window.location.href = redirectTo
+      }
     } catch {
       setError("An error occurred. Please try again.")
       setIsLoading(false)

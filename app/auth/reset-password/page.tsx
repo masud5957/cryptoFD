@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, Suspense } from "react"
+import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,6 +14,7 @@ import { Loader2, TrendingUp, AlertCircle, CheckCircle, Eye, EyeOff } from "luci
 function ResetPasswordContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get("email") || ""
+  const router = useRouter()
   
   const [otp, setOtp] = useState("")
   const [password, setPassword] = useState("")
@@ -21,7 +23,11 @@ function ResetPasswordContent() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -62,9 +68,11 @@ function ResetPasswordContent() {
       setSuccess(true)
       
       // Redirect to login after 3 seconds
-      setTimeout(() => {
-        router.push("/auth/login")
-      }, 3000)
+      if (mounted) {
+        setTimeout(() => {
+          router.push("/auth/login")
+        }, 3000)
+      }
     } catch {
       setError("An error occurred. Please try again.")
     } finally {
