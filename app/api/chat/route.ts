@@ -1,4 +1,5 @@
 import { generateText } from 'ai'
+import { openai } from '@ai-sdk/openai'
 
 const SYSTEM_PROMPT = `You are CryptoFD Assistant, a knowledgeable and friendly customer support AI for CryptoFD - a cryptocurrency Fixed Deposit platform.
 
@@ -33,22 +34,29 @@ const SYSTEM_PROMPT = `You are CryptoFD Assistant, a knowledgeable and friendly 
 
 export async function POST(request: Request) {
   try {
-    const { message } = await request.json()
+    const body = await request.json()
+    const { message } = body
 
-    if (!message || typeof message !== 'string') {
+    console.log('[v0] Incoming chat message:', message)
+
+    if (!message || typeof message !== 'string' || !message.trim()) {
       return Response.json(
         { error: 'Invalid message format' },
         { status: 400 }
       )
     }
 
+    console.log('[v0] Calling OpenAI API with model: gpt-4o-mini')
+    
     const result = await generateText({
-      model: 'openai/gpt-4o-mini',
+      model: openai('gpt-4o-mini'),
       system: SYSTEM_PROMPT,
-      prompt: message,
+      prompt: message.trim(),
       temperature: 0.7,
       maxTokens: 1024,
     })
+
+    console.log('[v0] API response generated successfully')
 
     return Response.json({
       response: result.text,
@@ -58,9 +66,16 @@ export async function POST(request: Request) {
       },
     })
   } catch (error) {
-    console.error('Chat API error:', error)
+    console.error('[v0] Chat API error:', error)
+    
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('[v0] Error details:', errorMessage)
+
     return Response.json(
-      { error: 'Failed to generate response' },
+      { 
+        error: 'Failed to generate response',
+        details: errorMessage
+      },
       { status: 500 }
     )
   }

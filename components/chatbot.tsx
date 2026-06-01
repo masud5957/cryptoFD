@@ -107,9 +107,20 @@ export function Chatbot() {
         body: JSON.stringify({ message: text })
       })
 
-      if (!response.ok) throw new Error("Failed to get response")
+      console.log("[v0] API response status:", response.status)
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error("[v0] API error response:", errorData)
+        throw new Error(errorData.error || `API Error: ${response.status}`)
+      }
 
       const data = await response.json()
+      console.log("[v0] API response data:", data)
+
+      if (!data.response) {
+        throw new Error("No response content from API")
+      }
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -120,7 +131,7 @@ export function Chatbot() {
       
       setMessages(prev => [...prev, botMessage])
     } catch (error) {
-      console.error("Chat error:", error)
+      console.error("[v0] Chat error:", error)
       const errorMessage: Message = {
         id: (Date.now() + 2).toString(),
         type: "bot",
