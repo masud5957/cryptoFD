@@ -9,6 +9,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, otp } = body
 
+    console.log("[v0] Verify OTP endpoint called with email:", email)
+
     if (!email || !otp) {
       return NextResponse.json(
         { error: "Email and OTP are required" },
@@ -22,6 +24,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
+      console.log("[v0] User not found:", email)
       return NextResponse.json(
         { error: "User not found" },
         { status: 404 }
@@ -30,6 +33,7 @@ export async function POST(request: NextRequest) {
 
     // Check OTP
     if (!user.otpCode || user.otpCode !== otp) {
+      console.log("[v0] Invalid OTP. Expected:", user.otpCode, "Got:", otp)
       return NextResponse.json(
         { error: "Invalid verification code" },
         { status: 400 }
@@ -38,6 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Check if OTP expired
     if (!user.otpExpiresAt || new Date() > user.otpExpiresAt) {
+      console.log("[v0] OTP expired. Expires at:", user.otpExpiresAt)
       return NextResponse.json(
         { error: "Verification code has expired" },
         { status: 400 }
@@ -46,6 +51,8 @@ export async function POST(request: NextRequest) {
 
     // Clear OTP and mark as verified
     const wasVerified = user.isVerified
+    console.log("[v0] Marking user as verified. Was verified:", wasVerified)
+    
     await prisma.profile.update({
       where: { id: user.id },
       data: {
@@ -57,11 +64,13 @@ export async function POST(request: NextRequest) {
 
     // If this is first verification (registration), create referral chain
     if (!wasVerified && user.referredBy) {
+      console.log("[v0] Creating referral chain for user:", user.id)
       await createReferralChain(user.id, user.referredBy)
       await sendWelcomeEmail(user.email, user.name || undefined)
     }
 
     // Generate JWT token
+    console.log("[v0] Generating token for user:", user.id)
     const token = await generateToken(user.id)
 
     // Create response with cookie
@@ -79,8 +88,8 @@ export async function POST(request: NextRequest) {
     // Set auth cookie on response
     response.cookies.set("auth_token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax" as const,
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     })
@@ -90,7 +99,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Verify OTP] Error:", error)
     return NextResponse.json(
-      { error: "Verification failed" },
+      { error: "Verification failed: " + (error instanceof Error ? error.message : "Unknown error") },
       { status: 500 }
     )
   }
