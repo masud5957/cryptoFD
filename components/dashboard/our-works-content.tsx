@@ -155,6 +155,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
   const [cryptoData] = useState(() => generateCryptoData({ btc: 68000, eth: 3200, bnb: 580, sol: 120 }))
   const [tradingActivity, setTradingActivity] = useState(initialTradingActivity)
   const [portfolioData, setPortfolioData] = useState(portfolioAllocation)
+  const [cryptoPrices, setCryptoPrices] = useState<any[]>([])
   const [isHydrated, setIsHydrated] = useState(false)
   
   // Use database values for stats
@@ -234,6 +235,33 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
 
     fetchTradingActivity()
     fetchPortfolio()
+    
+    // Fetch crypto prices from database
+    const fetchCryptoPrices = async () => {
+      try {
+        const response = await fetch('/api/admin/trading-data?type=prices&limit=20')
+        const data = await response.json()
+        if (Array.isArray(data) && data.length > 0) {
+          // Group prices by date and create data structure
+          const pricesByDate: { [key: string]: any } = {}
+          data.forEach((p: any) => {
+            const date = new Date(p.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            if (!pricesByDate[date]) {
+              pricesByDate[date] = { date }
+            }
+            pricesByDate[date][p.crypto.toLowerCase()] = Number(p.price)
+          })
+          setCryptoPrices(Object.values(pricesByDate))
+        } else {
+          // Clear data if API returns empty
+          setCryptoPrices([])
+        }
+      } catch (error) {
+        console.error("Failed to fetch crypto prices:", error)
+      }
+    }
+    
+    fetchCryptoPrices()
   }, [])
 
   // Fetch real stats from database - only on mount
