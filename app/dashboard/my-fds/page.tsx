@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Clock, TrendingUp, Calendar, Layers } from "lucide-react"
+import { Clock, TrendingUp, Calendar, Layers, Wallet, CheckCircle2, Hourglass } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import type { UserFD } from "@/lib/types"
@@ -20,80 +20,101 @@ function FDCard({ fd }: { fd: UserFD }) {
   const progress = Math.min(100, Math.max(0, (daysElapsed / totalDays) * 100))
   
   return (
-    <Card className="rounded-2xl border-border bg-card p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-foreground">
-              ${Number(fd.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-            <span className="text-sm text-muted-foreground">USDT</span>
+    <Card className="rounded-2xl border border-border bg-card/50 hover:bg-card hover:shadow-lg hover:border-primary/50 transition-all overflow-hidden">
+      <div className="p-6">
+        {/* Header with Status */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <Wallet className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-foreground">
+                    ${Number(fd.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                  <span className="text-sm text-muted-foreground">USDT</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">{fd.plan?.name} Plan</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-1 flex items-center gap-2">
+          
+          <div className="text-right">
             <Badge
               className={
                 fd.status === "active"
-                  ? "bg-green-500/10 text-green-500"
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 border"
                   : fd.status === "completed"
-                  ? "bg-blue-500/10 text-blue-500"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 border"
+                  : "bg-muted text-muted-foreground border-border border"
               }
             >
-              {fd.status}
+              <span className="flex items-center gap-1">
+                {fd.status === "completed" ? <CheckCircle2 className="h-3 w-3" /> : <Hourglass className="h-3 w-3" />}
+                {fd.status.charAt(0).toUpperCase() + fd.status.slice(1)}
+              </span>
             </Badge>
-            <span className="text-sm text-muted-foreground">{fd.plan?.name}</span>
+            <div className="flex items-center gap-1 text-green-500 mt-2 justify-end">
+              <TrendingUp className="h-4 w-4" />
+              <span className="text-lg font-bold">{fd.plan?.dailyRoi}%</span>
+              <span className="text-xs text-muted-foreground">/day</span>
+            </div>
           </div>
         </div>
-        <div className="text-right">
-          <div className="flex items-center gap-1 text-green-500">
-            <TrendingUp className="h-4 w-4" />
-            <span className="text-lg font-bold">{fd.plan?.dailyRoi}%</span>
-          </div>
-          <span className="text-xs text-muted-foreground">/day</span>
-        </div>
-      </div>
 
-      <div className="mt-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Progress</span>
-          <span className="text-foreground">{Math.round(progress)}%</span>
-        </div>
-        <Progress value={progress} className="mt-2 h-2" />
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <div className="rounded-lg bg-secondary/50 p-3">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Calendar className="h-3 w-3" />
-            Start Date
+        {/* Progress Section */}
+        <div className="space-y-2 mb-6">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Duration Progress</span>
+            <span className="text-sm font-bold text-foreground">{Math.round(progress)}% Complete</span>
           </div>
-          <p className="mt-1 text-sm font-medium text-foreground">
-            {startDate.toLocaleDateString()}
-          </p>
-        </div>
-        <div className="rounded-lg bg-secondary/50 p-3">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            End Date
+          <Progress value={progress} className="h-2.5 rounded-full" />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{Math.max(0, daysElapsed)} / {totalDays} days</span>
+            <span>{Math.max(0, totalDays - daysElapsed)} days left</span>
           </div>
-          <p className="mt-1 text-sm font-medium text-foreground">
-            {endDate.toLocaleDateString()}
-          </p>
         </div>
-      </div>
 
-      <div className="mt-4 rounded-lg bg-green-500/10 p-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Total Earned</span>
-          <span className="text-lg font-bold text-green-500">
-            +${Number(fd.totalEarned).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
+        {/* Key Information Grid */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="rounded-lg bg-secondary/50 border border-border p-3">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+              <Calendar className="h-3 w-3" />
+              <span>Start</span>
+            </div>
+            <p className="text-sm font-semibold text-foreground">
+              {startDate.toLocaleDateString()}
+            </p>
+          </div>
+          <div className="rounded-lg bg-secondary/50 border border-border p-3">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+              <Clock className="h-3 w-3" />
+              <span>Maturity</span>
+            </div>
+            <p className="text-sm font-semibold text-foreground">
+              {endDate.toLocaleDateString()}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center justify-between mt-1">
-          <span className="text-xs text-muted-foreground">Daily Earning</span>
-          <span className="text-sm text-green-500">
-            +${Number(fd.dailyEarning).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
+
+        {/* Earnings Summary */}
+        <div className="rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 p-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="text-xs text-muted-foreground block mb-1">Total Earned</span>
+              <span className="text-lg font-bold text-green-500">
+                +${Number(fd.totalEarned).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-xs text-muted-foreground block mb-1">Daily Rate</span>
+              <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                +${Number(fd.dailyEarning).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </Card>
@@ -116,35 +137,62 @@ export default async function MyFDsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">My Fixed Deposits</h1>
-        <p className="mt-1 text-muted-foreground">
-          Track and manage all your active and completed FDs
-        </p>
+      {/* Premium Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 p-8">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold text-foreground">My Fixed Deposits</h1>
+          <p className="text-muted-foreground mt-2">
+            Track and manage all your active and completed FDs
+          </p>
+        </div>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards - Professional Grid */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="rounded-2xl border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">Total Locked</p>
-          <p className="mt-1 text-2xl font-bold text-foreground">
-            ${totalLocked.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
+        <Card className="rounded-2xl border-border bg-card/50 hover:bg-card transition-colors p-6 hover:shadow-lg hover:border-primary/50">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+              <Wallet className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Locked</p>
+              <p className="mt-1 text-2xl font-bold text-foreground">
+                ${totalLocked.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+            </div>
+          </div>
         </Card>
-        <Card className="rounded-2xl border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">Total Earned</p>
-          <p className="mt-1 text-2xl font-bold text-green-500">
-            +${totalEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
+        
+        <Card className="rounded-2xl border-border bg-card/50 hover:bg-card transition-colors p-6 hover:shadow-lg hover:border-green-500/50">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10">
+              <TrendingUp className="h-6 w-6 text-green-500" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Earned</p>
+              <p className="mt-1 text-2xl font-bold text-green-500">
+                +${totalEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+            </div>
+          </div>
         </Card>
-        <Card className="rounded-2xl border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">Active FDs</p>
-          <p className="mt-1 text-2xl font-bold text-foreground">{activeFDs.length}</p>
+        
+        <Card className="rounded-2xl border-border bg-card/50 hover:bg-card transition-colors p-6 hover:shadow-lg hover:border-blue-500/50">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
+              <Layers className="h-6 w-6 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Active FDs</p>
+              <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">{activeFDs.length}</p>
+            </div>
+          </div>
         </Card>
       </div>
 
       {allFDs.length === 0 ? (
-        <Card className="rounded-2xl border-border bg-card p-12 text-center">
+        <Card className="rounded-2xl border-border bg-card/50 p-12 text-center">
           <div className="flex justify-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Layers className="h-8 w-8 text-primary" />
@@ -161,10 +209,12 @@ export default async function MyFDsPage() {
       ) : (
         <Tabs defaultValue="active" className="space-y-4">
           <TabsList className="bg-secondary">
-            <TabsTrigger value="active" className="data-[state=active]:bg-primary">
+            <TabsTrigger value="active" className="data-[state=active]:bg-primary gap-2">
+              <Hourglass className="h-4 w-4" />
               Active ({activeFDs.length})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="data-[state=active]:bg-primary">
+            <TabsTrigger value="completed" className="data-[state=active]:bg-primary gap-2">
+              <CheckCircle2 className="h-4 w-4" />
               Completed ({completedFDs.length})
             </TabsTrigger>
           </TabsList>
@@ -172,7 +222,7 @@ export default async function MyFDsPage() {
           <TabsContent value="active" className="space-y-4">
             {activeFDs.length === 0 ? (
               <Card className="rounded-2xl border-border bg-card p-8 text-center">
-                <p className="text-muted-foreground">No active FDs</p>
+                <p className="text-muted-foreground">No active FDs currently</p>
                 <Link href="/dashboard/create-fd">
                   <Button variant="outline" className="mt-4">Create New FD</Button>
                 </Link>
