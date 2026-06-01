@@ -65,7 +65,7 @@ const knowledgeBase: { keywords: string[]; response: string }[] = [
   // Withdrawal
   {
     keywords: ["withdraw", "withdrawal", "cash out", "take out", "get money", "payout", "transfer out"],
-    response: "Withdrawing your earnings is simple and fast!\n\n**What You Can Withdraw:**\n- Daily FD earnings (available immediately)\n- Referral commissions\n- Matured FD principal (after 30 days)\n\n**How to Withdraw:**\n1. Go to Wallet page\n2. Click 'Withdraw' tab\n3. Enter your BEP-20 wallet address\n4. Enter amount (min 10 USDT)\n5. Click 'Request Withdrawal'\n\n**Processing:**\n- Time: Usually within 1 hour\n- Network: BEP-20 (BSC)\n- Fee: 1 USDT per withdrawal\n\n**Note:** Your locked FD principal returns to available balance after the 30-day period ends."
+    response: "Withdrawing your earnings is simple and fast!\n\n**What You Can Withdraw:**\n- Daily FD earnings (available immediately)\n- Referral commissions\n- Matured FD principal (after 30 days)\n\n**How to Withdraw:**\n1. Go to Wallet page\n2. Click 'Withdraw' tab\n3. Enter your BEP-20 wallet address\n4. Enter amount (min 10 USDT)\n5. Click 'Request Withdrawal'\n\n**Processing:**\n- Time: Usually within 1 hour\n- Network: BEP-20 (BSC)\n- Platform Fee: 3% of withdraw amount\n\n**Fee Example:**\nWithdraw $1000 USDT:\n- Platform Fee (3%): $30 USDT\n- You receive: $970 USDT\n\n**Note:** Your locked FD principal returns to available balance after the 30-day period ends."
   },
   
   // Deposit
@@ -119,7 +119,7 @@ const knowledgeBase: { keywords: string[]; response: string }[] = [
   // Minimum & Maximum
   {
     keywords: ["minimum", "maximum", "limit", "amount", "min", "max", "least", "most"],
-    response: "Investment limits by plan:\n\n**Investment Ranges:**\n- Starter: $50 - $499\n- Bronze: $500 - $1,999\n- Silver: $2,000 - $4,999\n- Gold: $5,000 - $9,999\n- Platinum: $10,000 - $49,999\n- Diamond: $50,000 - $500,000\n\n**Deposit:**\n- Minimum: 10 USDT\n- Maximum: No limit\n\n**Withdrawal:**\n- Minimum: 10 USDT\n- Maximum: Your available balance\n- Fee: 1 USDT\n\n**Multiple FDs:**\nYou can have multiple active FDs at once!\nExample: One Gold + One Platinum = More earnings"
+    response: "Investment limits by plan:\n\n**Investment Ranges:**\n- Starter: $50 - $499\n- Bronze: $500 - $1,999\n- Silver: $2,000 - $4,999\n- Gold: $5,000 - $9,999\n- Platinum: $10,000 - $49,999\n- Diamond: $50,000 - $500,000\n\n**Deposit:**\n- Minimum: 10 USDT\n- Maximum: No limit\n\n**Withdrawal:**\n- Minimum: 10 USDT\n- Maximum: Your available balance\n- Fee: 3% of withdraw amount\n\n**Multiple FDs:**\nYou can have multiple active FDs at once!\nExample: One Gold + One Platinum = More earnings"
   },
   
   // How to Start
@@ -137,7 +137,7 @@ const knowledgeBase: { keywords: string[]; response: string }[] = [
   // Fees
   {
     keywords: ["fee", "fees", "charge", "cost", "deduction"],
-    response: "Our fee structure is simple and transparent:\n\n**Deposit Fees:**\n- CryptoFD: FREE\n- Network: ~$0.10 (BSC gas)\n\n**Withdrawal Fees:**\n- CryptoFD: 1 USDT flat fee\n- Network: Included in fee\n\n**Investment Fees:**\n- Creating FD: FREE\n- Daily earnings: No deductions\n\n**Referral Commissions:**\n- No fees on referral earnings\n- 100% credited to your balance\n\n**Summary:**\nOnly 1 USDT withdrawal fee. Everything else is FREE!"
+    response: "Our fee structure is simple and transparent:\n\n**Deposit Fees:**\n- CryptoFD: FREE\n- Network: ~$0.10 (BSC gas)\n\n**Withdrawal Fees:**\n- Platform Fee: 3% of withdraw amount\n- Network: Included in fee\n\n**Fee Examples:**\n- Withdraw $100: Pay $3 fee, receive $97\n- Withdraw $1000: Pay $30 fee, receive $970\n- Withdraw $10,000: Pay $300 fee, receive $9,700\n\n**Investment Fees:**\n- Creating FD: FREE\n- Daily earnings: No deductions\n\n**Referral Commissions:**\n- No fees on referral earnings\n- 100% credited to your balance\n\n**Summary:**\nOnly 3% withdrawal fee. Everything else is FREE!"
   },
   
   // Account & Profile
