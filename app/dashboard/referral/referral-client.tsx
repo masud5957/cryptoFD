@@ -12,7 +12,10 @@ import {
   Users, 
   DollarSign,
   Award,
-  CheckCircle
+  CheckCircle,
+  Zap,
+  TrendingUp,
+  Link2
 } from "lucide-react"
 
 interface LevelEarning {
@@ -30,17 +33,17 @@ interface ReferralClientProps {
 }
 
 const howItWorks = [
-  { step: 1, title: "Share Your Link", description: "Share your unique referral link with friends and family" },
-  { step: 2, title: "They Join & Invest", description: "When they sign up and create a fixed deposit" },
-  { step: 3, title: "You Earn Commission", description: "Earn up to 5% commission on their investments" },
+  { step: 1, title: "Share Your Link", description: "Share your unique referral link with friends and family", icon: Share2 },
+  { step: 2, title: "They Join & Invest", description: "When they sign up and create a fixed deposit", icon: Users },
+  { step: 3, title: "You Earn Commission", description: "Earn up to 10% commission on their daily earnings", icon: TrendingUp },
 ]
 
-const levelColors: Record<number, string> = {
-  1: "bg-primary/10 text-primary",
-  2: "bg-blue-500/10 text-blue-500",
-  3: "bg-cyan-500/10 text-cyan-500",
-  4: "bg-purple-500/10 text-purple-500",
-  5: "bg-orange-500/10 text-orange-500",
+const levelColors: Record<number, { bg: string; text: string; border: string }> = {
+  1: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
+  2: { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20" },
+  3: { bg: "bg-cyan-500/10", text: "text-cyan-500", border: "border-cyan-500/20" },
+  4: { bg: "bg-purple-500/10", text: "text-purple-500", border: "border-purple-500/20" },
+  5: { bg: "bg-orange-500/10", text: "text-orange-500", border: "border-orange-500/20" },
 }
 
 export function ReferralClient({ 
@@ -80,92 +83,109 @@ export function ReferralClient({
   const displayLevels = Array.from({ length: 3 }, (_, i) => {
     const level = i + 1
     const found = levelEarnings.find((l) => l.level === level)
-    return found || { level, referrals: 0, earnings: 0, commission: level === 1 ? 5 : level === 2 ? 3 : 2 }
+    return found || { level, referrals: 0, earnings: 0, commission: level === 1 ? 10 : level === 2 ? 5 : 2 }
   })
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Referral Program</h1>
-        <p className="mt-1 text-muted-foreground">
-          Invite friends and earn up to 5% commission on their investments
-        </p>
+      {/* Premium Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 p-8">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-2">
+            <h1 className="text-3xl font-bold text-foreground">Referral Program</h1>
+            <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 border gap-1">
+              <Zap className="h-3 w-3" />
+              10% Commission
+            </Badge>
+          </div>
+          <p className="text-muted-foreground text-lg">
+            Invite friends and earn unlimited passive income
+          </p>
+        </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Professional Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="rounded-2xl border-border bg-card p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10">
-              <DollarSign className="h-5 w-5 text-green-500" />
-            </div>
+        <Card className="rounded-2xl border-border bg-card/50 hover:bg-card hover:border-green-500/50 hover:shadow-lg transition-all p-6">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-muted-foreground">Total Earnings</p>
-              <p className="text-xl font-bold text-green-500">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Earnings</p>
+              <p className="text-2xl font-bold text-green-500 mt-2">
                 ${totalEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
-          </div>
-        </Card>
-        <Card className="rounded-2xl border-border bg-card p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-              <Users className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Total Referrals</p>
-              <p className="text-xl font-bold text-foreground">{totalReferrals}</p>
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10">
+              <DollarSign className="h-6 w-6 text-green-500" />
             </div>
           </div>
         </Card>
-        <Card className="rounded-2xl border-border bg-card p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10">
-              <Gift className="h-5 w-5 text-blue-500" />
-            </div>
+
+        <Card className="rounded-2xl border-border bg-card/50 hover:bg-card hover:border-primary/50 hover:shadow-lg transition-all p-6">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-muted-foreground">Direct Referrals</p>
-              <p className="text-xl font-bold text-foreground">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Referrals</p>
+              <p className="text-2xl font-bold text-foreground mt-2">{totalReferrals}</p>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+              <Users className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="rounded-2xl border-border bg-card/50 hover:bg-card hover:border-blue-500/50 hover:shadow-lg transition-all p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Direct Referrals</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
                 {displayLevels[0]?.referrals || 0}
               </p>
             </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
+              <Gift className="h-6 w-6 text-blue-500" />
+            </div>
           </div>
         </Card>
-        <Card className="rounded-2xl border-border bg-card p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10">
-              <Award className="h-5 w-5 text-green-500" />
-            </div>
+
+        <Card className="rounded-2xl border-border bg-card/50 hover:bg-card hover:border-amber-500/50 hover:shadow-lg transition-all p-6">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-muted-foreground">Commission Rate</p>
-              <p className="text-xl font-bold text-foreground">Up to 5%</p>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Commission</p>
+              <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">Up to 10%</p>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-500/10">
+              <Award className="h-6 w-6 text-amber-500" />
             </div>
           </div>
         </Card>
       </div>
 
-      {/* Referral Link Card */}
-      <Card className="rounded-2xl border-border bg-gradient-to-br from-primary/10 via-card to-card p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
-            <Gift className="h-6 w-6 text-primary" />
+      {/* Referral Link Card - Enhanced */}
+      <Card className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card p-8">
+        <div className="flex items-start gap-4 mb-6">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/20 flex-shrink-0">
+            <Link2 className="h-7 w-7 text-primary" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-foreground">Your Referral Link</h3>
-            <p className="text-sm text-muted-foreground">Share this link to invite new users</p>
+            <h3 className="text-2xl font-bold text-foreground">Your Referral Link</h3>
+            <p className="text-muted-foreground mt-1">Share to earn 10% on referrals' daily earnings</p>
           </div>
         </div>
 
-        <div className="mt-6 space-y-4">
+        <div className="space-y-4">
           <div>
-            <label className="text-sm text-muted-foreground">Referral Code</label>
-            <div className="mt-2 flex gap-2">
+            <label className="text-sm font-semibold text-foreground block mb-2">Referral Code</label>
+            <div className="flex gap-2">
               <Input
                 value={referralCode}
                 readOnly
-                className="bg-secondary/50 font-mono text-lg font-bold"
+                className="bg-secondary/50 font-mono text-lg font-bold border-border"
               />
-              <Button variant="secondary" onClick={() => handleCopy(referralCode)}>
+              <Button 
+                variant="secondary" 
+                onClick={() => handleCopy(referralCode)}
+                className="whitespace-nowrap"
+              >
                 <Copy className="mr-2 h-4 w-4" />
                 Copy
               </Button>
@@ -173,26 +193,30 @@ export function ReferralClient({
           </div>
 
           <div>
-            <label className="text-sm text-muted-foreground">Referral Link</label>
-            <div className="mt-2 flex gap-2">
+            <label className="text-sm font-semibold text-foreground block mb-2">Referral Link</label>
+            <div className="flex gap-2">
               <Input
                 value={referralLink}
                 readOnly
-                className="bg-secondary/50 text-muted-foreground"
+                className="bg-secondary/50 text-muted-foreground border-border truncate"
               />
-              <Button variant="secondary" onClick={() => handleCopy(referralLink)}>
+              <Button 
+                variant="secondary" 
+                onClick={() => handleCopy(referralLink)}
+                className="whitespace-nowrap"
+              >
                 <Copy className="mr-2 h-4 w-4" />
                 {copied ? "Copied!" : "Copy"}
               </Button>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button onClick={() => handleCopy(referralLink)} className="flex-1 gap-2">
+          <div className="flex gap-3 pt-3">
+            <Button onClick={() => handleCopy(referralLink)} className="flex-1 gap-2 h-11">
               <Copy className="h-4 w-4" />
-              Copy Link
+              Copy Full Link
             </Button>
-            <Button variant="secondary" onClick={handleShare} className="flex-1 gap-2">
+            <Button variant="secondary" onClick={handleShare} className="flex-1 gap-2 h-11">
               <Share2 className="h-4 w-4" />
               Share
             </Button>
@@ -202,56 +226,69 @@ export function ReferralClient({
 
       {/* Level-wise Earnings */}
       <Card className="rounded-2xl border-border bg-card p-6">
-        <h3 className="text-lg font-semibold text-foreground">Earnings by Level</h3>
+        <h3 className="text-xl font-bold text-foreground mb-6">Earnings by Level</h3>
         
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          {displayLevels.map((level) => (
-            <div key={level.level} className="rounded-xl bg-secondary/30 p-4">
-              <div className="flex items-center justify-between">
-                <Badge className={levelColors[level.level]}>Level {level.level}</Badge>
-                <span className="text-xs text-muted-foreground">{level.commission}% Commission</span>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {displayLevels.map((level) => {
+            const colors = levelColors[level.level]
+            return (
+              <div 
+                key={level.level} 
+                className={`rounded-xl border ${colors.border} ${colors.bg} p-6 hover:shadow-lg transition-all`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <Badge className={`${colors.bg} ${colors.text} border ${colors.border}`}>
+                    Level {level.level}
+                  </Badge>
+                  <span className="text-sm font-bold text-foreground">{level.commission}% Commission</span>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Total Earnings</p>
+                    <p className={`text-2xl font-bold ${colors.text}`}>
+                      ${level.earnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Referrals</p>
+                    <p className="text-lg font-bold text-foreground">{level.referrals} members</p>
+                  </div>
+                </div>
               </div>
-              <div className="mt-3">
-                <p className="text-2xl font-bold text-foreground">
-                  ${level.earnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {level.referrals} referrals
-                </p>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </Card>
 
       {/* How It Works */}
       <Card className="rounded-2xl border-border bg-card p-6">
-        <h3 className="text-lg font-semibold text-foreground">How It Works</h3>
+        <h3 className="text-xl font-bold text-foreground mb-6">How It Works</h3>
         
-        <div className="mt-6 grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-3">
           {howItWorks.map((item) => (
             <div key={item.step} className="relative">
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground mb-4 flex-shrink-0">
                   {item.step}
                 </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">{item.title}</h4>
-                  <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
-                </div>
+                <item.icon className="h-8 w-8 text-primary mb-3" />
+                <h4 className="font-semibold text-foreground mb-2">{item.title}</h4>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 rounded-xl bg-green-500/10 p-4">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-500" />
-            <span className="font-medium text-green-500">No limits on referral earnings!</span>
+        <div className="mt-8 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 p-6">
+          <div className="flex items-start gap-3">
+            <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-green-600 dark:text-green-400 mb-1">Unlimited Earning Potential</p>
+              <p className="text-sm text-muted-foreground">
+                There&apos;s no limit to your referral income. The more you refer, the more you earn. Build your network and watch your passive income grow exponentially!
+              </p>
+            </div>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            The more you refer, the more you earn. There&apos;s no cap on your referral income.
-          </p>
         </div>
       </Card>
     </div>
