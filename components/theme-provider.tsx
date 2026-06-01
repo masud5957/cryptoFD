@@ -7,8 +7,18 @@ import {
 } from 'next-themes'
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <>{children}</>
+  }
+
   return (
-    <NextThemesProvider {...props} attribute="class" suppressHydrationWarning enableSystem storageKey="theme">
+    <NextThemesProvider {...props} attribute="class" suppressHydrationWarning enableSystem storageKey="theme" defaultTheme="dark" themes={['light', 'dark']}>
       {children}
     </NextThemesProvider>
   )

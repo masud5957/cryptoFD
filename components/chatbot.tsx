@@ -18,6 +18,10 @@ import {
   Shield,
   Clock,
   DollarSign,
+  Zap,
+  Lock,
+  TrendingDown,
+  Repeat,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
