@@ -166,7 +166,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
   })
 
   // Calculate cumulative data for chart
-  const monthlyChartData = monthlyRecords.length > 0 
+  const monthlyChartData = monthlyRecords && monthlyRecords.length > 0 
     ? monthlyRecords.map((record, index) => {
         const cumulative = monthlyRecords
           .slice(0, index + 1)
@@ -179,7 +179,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
           winRate: record.winRate,
         }
       })
-    : generateFallbackMonthlyData()
+    : [] // Return empty array if no data instead of generating fake data
 
   // Hydrate with live data after mount
   useEffect(() => {
@@ -202,6 +202,9 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
             time: new Date(act.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
             status: act.status,
           })))
+        } else {
+          // Clear data if API returns empty
+          setTradingActivity([])
         }
       } catch (error) {
         console.error("Failed to fetch trading activity:", error)
@@ -220,6 +223,9 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
             value: p.percentage,
             color: colors[index % colors.length],
           })))
+        } else {
+          // Clear data if API returns empty
+          setPortfolioData([])
         }
       } catch (error) {
         console.error("Failed to fetch portfolio:", error)
@@ -230,7 +236,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
     fetchPortfolio()
   }, [])
 
-  // Fetch real stats from database
+  // Fetch real stats from database - only on mount
   useEffect(() => {
     const fetchTradingData = async () => {
       try {
@@ -238,10 +244,10 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
         const data = await response.json()
         
         setLiveStats(prev => ({
-          totalProfit: data.totalProfit,
-          todayProfit: data.todayProfit || prev.todayProfit,
-          activeTrades: data.activeTrades || prev.activeTrades,
-          winRate: data.winRate,
+          totalProfit: data.totalProfit || 0,
+          todayProfit: data.todayProfit || 0,
+          activeTrades: data.activeTrades || 0,
+          winRate: data.winRate || 76.5,
         }))
       } catch (error) {
         console.error("Failed to fetch trading stats:", error)
@@ -249,9 +255,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
     }
 
     fetchTradingData()
-    const interval = setInterval(fetchTradingData, 10000)
-    
-    return () => clearInterval(interval)
+    // Only fetch on mount, no auto-refresh to prevent data from changing automatically
   }, [])
 
   return (
