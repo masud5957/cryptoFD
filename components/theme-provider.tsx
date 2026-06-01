@@ -11,19 +11,15 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     setMounted(true)
   }, [])
 
-  // Prevent hydration mismatch by only rendering after mount
+  // Only render the provider after hydration to avoid script tag issues
   if (!mounted) {
     return <>{children}</>
   }
 
   return (
     <NextThemesProvider 
-      {...props} 
-      attribute="class" 
-      suppressHydrationWarning 
-      enableSystem 
-      storageKey="theme"
-      disableTransitionOnChange
+      {...props}
+      suppressHydrationWarning
     >
       {children}
     </NextThemesProvider>
