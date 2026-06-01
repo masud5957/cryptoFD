@@ -18,7 +18,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   }
 
   return (
-    <NextThemesProvider {...props} attribute="class" suppressHydrationWarning enableSystem storageKey="theme" defaultTheme="dark" themes={['light', 'dark']}>
+    <NextThemesProvider {...props} attribute="class" suppressHydrationWarning enableSystem storageKey="theme">
       {children}
     </NextThemesProvider>
   )
