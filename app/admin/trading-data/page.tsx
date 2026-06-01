@@ -36,6 +36,29 @@ export default function TradingDataManagement() {
     }
   }
 
+  // Delete all data
+  const deleteAllData = async () => {
+    if (!window.confirm("⚠️ This will DELETE ALL trading data. This cannot be undone. Continue?")) return
+    if (!window.confirm("Are you absolutely sure? Click OK to confirm deletion.")) return
+    
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/admin/trading-data/delete-all', { method: 'POST' })
+      if (response.ok) {
+        const result = await response.json()
+        toast.success('All data deleted successfully')
+        setIsInitialized(false)
+        setActivities([])
+        setPortfolio([])
+        setPrices([])
+      }
+    } catch (error) {
+      toast.error('Failed to delete data')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Activity form
   const [activityForm, setActivityForm] = useState({
     crypto: 'BTC',
@@ -188,9 +211,15 @@ export default function TradingDataManagement() {
             <h1 className="text-3xl font-bold text-foreground mb-2">Trading Data Management</h1>
             <p className="text-muted-foreground">Manage all trading data shown in "Our Works" section</p>
           </div>
-          <Button onClick={initializeData} disabled={isLoading || isInitialized} size="lg" variant="outline">
-            {isLoading ? "Initializing..." : isInitialized ? "✓ Data Initialized" : "Initialize Sample Data"}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={initializeData} disabled={isLoading || isInitialized} size="lg" variant="outline">
+              {isLoading ? "Initializing..." : isInitialized ? "✓ Data Initialized" : "Initialize Sample Data"}
+            </Button>
+            <Button onClick={deleteAllData} disabled={isLoading} size="lg" variant="destructive">
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete All Data
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="activity" className="space-y-6">
