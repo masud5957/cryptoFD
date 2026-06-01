@@ -394,7 +394,7 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
                   <Tooltip
                     contentStyle={{ backgroundColor: "#1F2937", border: "1px solid #374151", borderRadius: "8px" }}
                     labelStyle={{ color: "#F3F4F6" }}
-                    formatter={(value: number) => [`$${value.toLocaleString()}`, "Cumulative Profit"]}
+                    formatter={(value: number) => [`$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, "Cumulative Profit"]}
                   />
                   <Area 
                     type="monotone" 
@@ -551,14 +551,14 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
                   <tr key={index} className="border-b border-border/50">
                     <td className="py-3 text-sm font-medium text-foreground">{month.month}</td>
                     <td className="py-3 text-right text-sm text-emerald-500">
-                      +${month.profit.toLocaleString()}
+                      +${month.profit.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </td>
                     <td className="py-3 text-right text-sm text-muted-foreground">
-                      {month.trades.toLocaleString()}
+                      {month.trades.toLocaleString('en-US')}
                     </td>
                     <td className="py-3 text-right">
                       <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/30">
-                        {month.winRate}%
+                        {Number(month.winRate || 0).toFixed(1)}%
                       </Badge>
                     </td>
                   </tr>
@@ -611,10 +611,10 @@ export function OurWorksContent({ initialStats, monthlyRecords, todayProfit }: O
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium text-foreground">${trade.amount.toLocaleString()}</p>
+                  <p className="font-medium text-foreground">${trade.amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</p>
                   {trade.profit !== null && (
                     <p className={`text-xs ${trade.profit >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-                      {trade.profit >= 0 ? "+" : ""}{trade.profit.toLocaleString()} profit
+                      {trade.profit >= 0 ? "+" : ""}{trade.profit.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} profit
                     </p>
                   )}
                 </div>
