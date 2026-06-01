@@ -168,6 +168,78 @@ const knowledgeBase: { keywords: string[]; response: string }[] = [
   {
     keywords: ["thank", "thanks", "bye", "goodbye", "great", "awesome", "helpful"],
     response: "You're welcome! I'm glad I could help.\n\n**Quick Links:**\n- Dashboard: Check your earnings\n- New Investment: Start earning\n- Wallet: Deposit or withdraw\n- Referral: Share & earn more\n\n**Need More Help?**\n- I'm available 24/7\n- Email: support@cryptofd.com\n\nHappy investing! May your earnings grow daily!"
+  },
+
+  // Tax & Compliance
+  {
+    keywords: ["tax", "taxes", "report", "compliance", "legal", "government", "regulation"],
+    response: "Important information about taxes:\n\n**Your Responsibility:**\n- Track all earnings for tax purposes\n- Earnings are taxable income\n- Consult a tax professional in your country\n- Requirements vary by jurisdiction\n\n**What We Provide:**\n- Detailed transaction history\n- Downloadable reports\n- All earnings tracked\n- Export capability for tax filing\n\n**Recommendation:**\n- Keep records of all investments\n- Document daily earnings\n- Report to local tax authorities\n- Consult a tax advisor\n\nWe are compliant with regulations in our jurisdictions."
+  },
+
+  // Risk & Disclaimer
+  {
+    keywords: ["risk", "disclaimer", "warning", "caution", "loss", "liable"],
+    response: "**Important Risk Disclosure:**\n\nWhile CryptoFD operates transparently with blockchain verification:\n\n**Risks to Consider:**\n- Crypto market volatility\n- Platform operational risks\n- Network security\n- Regulatory changes\n\n**Our Guarantees:**\n- 100% capital return on maturity\n- Daily earnings withdrawable\n- Transparent on-chain transactions\n- Secure cold storage\n\n**Best Practices:**\n- Never invest more than you can afford\n- Diversify investments\n- Use secure wallet\n- Keep passwords private\n\n**Legal:**\nThis is not financial advice. Always do your own research and consult professionals before investing."
+  },
+
+  // Verification & KYC
+  {
+    keywords: ["verify", "kyc", "verification", "identify", "documents", "proof"],
+    response: "Account verification at CryptoFD:\n\n**Current Status:**\n- Email verification required on signup\n- Simple and instant process\n\n**In the Future:**\n- We may implement KYC for higher withdrawals\n- You'll receive advance notice\n- Takes 15-30 minutes typically\n- Required for regulatory compliance\n\n**What You May Need:**\n- Government ID\n- Proof of address\n- Selfie verification\n\n**Privacy:**\n- Data securely stored\n- Never shared with third parties\n- GDPR compliant\n\nStay tuned for announcements on enhanced verification!"
+  },
+
+  // API & Developers
+  {
+    keywords: ["api", "developer", "development", "integration", "technical", "build"],
+    response: "Developer information:\n\n**Current Status:**\n- API documentation coming soon\n- Web platform fully functional\n- Mobile app in development\n\n**For Developers:**\n- RESTful API planned\n- Webhook integration support\n- Comprehensive documentation\n- Sandbox environment\n\n**Contact:**\n- Developer inquiries: dev@cryptofd.com\n- Join developer community\n- Beta testing opportunities\n\n**Roadmap:**\n- API Q2 2025\n- Mobile app Q1 2025\n- Additional features quarterly\n\nInterested in integrating? Contact our developer team!"
+  },
+
+  // Rewards & Promotions
+  {
+    keywords: ["reward", "bonus", "promotion", "offer", "discount", "campaign"],
+    response: "Special rewards and promotions:\n\n**Current Promotions:**\n- Referral bonuses (up to 10%)\n- Multiple FD benefits (compound growth)\n- Early bird advantages\n\n**Seasonal Campaigns:**\n- Keep checking Dashboard\n- Email notifications for new offers\n- Limited-time bonuses\n\n**Loyalty Rewards:**\n- Higher ROI for repeat investors\n- VIP status for large investments\n- Exclusive opportunities\n\n**How to Stay Updated:**\n- Check Notifications in Dashboard\n- Enable email alerts\n- Follow our social media\n- Join community discussions\n\nNew promotions added regularly! Subscribe for updates."
+  },
+
+  // Performance History
+  {
+    keywords: ["history", "past", "performance", "track record", "record", "statistics", "stats"],
+    response: "Track record and platform statistics:\n\n**Platform Stats:**\n- Founded: 2022\n- Investors: Global community\n- Total Investments: Millions in USDT\n- Success Rate: 99.9%\n\n**Your Investment History:**\n- View in 'My Investments' page\n- Complete transaction history\n- Earnings breakdown by FD\n- Download for records\n\n**Performance Metrics:**\n- Dashboard shows all-time stats\n- Monthly earnings summary\n- ROI visualization\n- Growth trends\n\n**Reports:**\n- Generate custom reports\n- Export to CSV/PDF\n- Share performance with advisors\n\nAll data is transparent and verifiable on-chain!"
+  },
+
+  // Emergency & Technical Issues
+  {
+    keywords: ["emergency", "problem", "bug", "error", "not working", "issue", "technical", "broken"],
+    response: "Technical issues and urgent help:\n\n**Immediate Problems:**\n1. Check system status page\n2. Clear browser cache\n3. Try different browser\n4. Restart application\n\n**Common Issues:**\n- **Can't log in:** Check caps lock, reset password\n- **Deposit not showing:** Wait 5-10 minutes, refresh\n- **Withdrawal failed:** Verify wallet address format\n- **Slow loading:** Check internet connection\n\n**Get Help:**\n- Email: support@cryptofd.com\n- Subject: Urgent - [Your Issue]\n- Include: Email, timestamp, screenshot\n- Response: Within 1 hour\n\n**Emergency Line:**\n- Critical issues: emergency@cryptofd.com\n- 24/7 response\n\nWe prioritize all technical issues!"
+  },
+
+  // Privacy & Data
+  {
+    keywords: ["privacy", "data", "personal information", "gdpr", "policy", "cookie"],
+    response: "Your privacy and data protection:\n\n**Privacy Policy:**\n- We never sell your data\n- Encrypted transmission (SSL)\n- Secure storage\n- GDPR compliant\n\n**What We Collect:**\n- Account information\n- Transaction history\n- Device information (for security)\n\n**What We Don't Collect:**\n- Third-party data\n- Unnecessary personal details\n- Cookie tracking\n\n**Your Rights:**\n- Access your data anytime\n- Request data export\n- Delete account and data\n- Change privacy settings\n\n**Contact:**\nPrivacy questions: privacy@cryptofd.com\n\nRead full policy on Settings page!"
+  },
+
+  // Investment Strategy
+  {
+    keywords: ["strategy", "suggest", "advice", "best", "optimal", "recommend", "should"],
+    response: "Investment strategies to consider:\n\n**Conservative Approach:**\n- Start with Starter/Bronze plans\n- $50-$500 per FD\n- Test platform first\n- Build up gradually\n\n**Balanced Approach:**\n- Mix of Silver & Gold plans\n- $2,000-$10,000 per FD\n- Stagger investment dates\n- Reinvest earnings\n\n**Aggressive Approach:**\n- Platinum/Diamond plans\n- $10,000+ per FD\n- Multiple active FDs\n- Maximize compounding\n\n**Recommended For Most:**\n- Reinvest daily earnings\n- Create new FD weekly\n- Rolling maturity schedule\n- Continuous income stream\n\n**Important:**\nThis is not financial advice. Choose strategy matching your risk tolerance."
+  },
+
+  // Comparisons & Alternatives
+  {
+    keywords: ["compare", "better than", "versus", "alternative", "competitor", "similar"],
+    response: "Why CryptoFD stands out:\n\n**Our Advantages:**\n- Guaranteed daily returns (2%-3.3%)\n- Quick withdrawals (1 hour)\n- Low fees (3% withdrawal)\n- No lock-in period for earnings\n- Blockchain verified\n- Flexible re-investment\n\n**vs. Traditional Banks:**\n- Banks: 0.5%-2% yearly\n- CryptoFD: 2%-3.3% daily!\n- Returns compound faster\n- Complete control\n\n**vs. Stock Market:**\n- Stocks: Volatile & unpredictable\n- CryptoFD: Stable & predictable\n- Daily income vs. quarterly\n- No market research needed\n\n**Why Choose Us:**\n- Transparency\n- Security\n- Community\n- Support\n\nJoin thousands of successful investors!"
+  },
+
+  // Getting Started - Detailed
+  {
+    keywords: ["beginner", "new user", "first time", "never invested", "explain", "simple"],
+    response: "Complete beginner's guide:\n\n**Phase 1: Setup (5 minutes)**\n1. Create account with email\n2. Choose strong password\n3. Optional: Enter referral code\n\n**Phase 2: Fund Account (10 minutes)**\n1. Get USDT on Binance/Coinbase\n2. Go to your deposit address\n3. Send minimum $10 USDT (BEP-20)\n4. Wait 2-5 minutes for confirmation\n\n**Phase 3: First Investment (2 minutes)**\n1. Go to 'New Investment'\n2. See auto-selected plan\n3. Click Invest\n4. Start earning!\n\n**Phase 4: Monitor & Earn (Daily)**\n1. Check Dashboard each day\n2. See new earnings\n3. Withdraw or reinvest\n\n**Pro Tips:**\n- Start small ($50)\n- Reinvest to grow faster\n- Share referral link\n- Create new FDs weekly\n\nEverything takes less than 1 hour!"
+  },
+
+  // Wallets & Addresses
+  {
+    keywords: ["wallet", "address", "metamask", "trust wallet", "binance", "private key"],
+    response: "Wallet and address information:\n\n**Your CryptoFD Wallet:**\n- Unique BEP-20 address\n- For deposits only\n- On your Wallet page\n- Never share or change\n\n**Supported External Wallets:**\n- Trust Wallet (recommended)\n- MetaMask\n- Binance\n- TokenPocket\n- SafePal\n- Hardware wallets (Ledger, Trezor)\n\n**For Withdrawals:**\n1. Use any BEP-20 wallet\n2. Enter wallet address\n3. Minimum $10 USDT\n4. Receives in 1 hour\n\n**Security Tips:**\n- Never share private keys\n- Use official apps only\n- Enable 2FA on wallets\n- Backup seed phrases\n\n**Support:**\nChoosing a wallet? Check our guide or email support!"
   }
 ]
 
