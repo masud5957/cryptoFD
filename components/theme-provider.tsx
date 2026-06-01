@@ -1,13 +1,21 @@
 'use client'
 
 import * as React from 'react'
-import dynamic from 'next/dynamic'
-import {
-  ThemeProvider as NextThemesProvider,
-  type ThemeProviderProps,
-} from 'next-themes'
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import type { ThemeProviderProps } from 'next-themes'
 
-function ThemeProviderInner({ children, ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Prevent hydration mismatch by only rendering after mount
+  if (!mounted) {
+    return <>{children}</>
+  }
+
   return (
     <NextThemesProvider 
       {...props} 
@@ -21,9 +29,3 @@ function ThemeProviderInner({ children, ...props }: ThemeProviderProps) {
     </NextThemesProvider>
   )
 }
-
-// Dynamically import with ssr: false to prevent script injection
-export const ThemeProvider = dynamic(
-  () => Promise.resolve(ThemeProviderInner),
-  { ssr: false }
-)
