@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { db } from "@/lib/db"
+import prisma from "@/lib/db"
 import { generateOTP, hashPassword } from "@/lib/auth"
 import { sendPasswordResetEmail } from "@/lib/email"
 
@@ -7,7 +7,7 @@ import { sendPasswordResetEmail } from "@/lib/email"
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email } = body
+    const { email, otp, newPassword } = body
 
     if (!email) {
       return NextResponse.json(
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = await db.profile.findUnique({
+    const user = await prisma.profile.findUnique({
       where: { email: email.toLowerCase() }
     })
 
@@ -28,16 +28,54 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // If OTP and new password provided, reset password
+    if (otp && newPassword) {
+      if (user.otpCode !== otp) {
+        return NextResponse.json(
+          { error: "Invalid verification code" },
+          { status: 400 }
+        )
+      }
+
+      if (!user.otpExpiresAt || new Date() > user.otpExpiresAt) {
+        return NextResponse.json(
+          { error: "Verification code has expired" },
+          { status: 400 }
+        )
+      }
+
+      if (newPassword.length < 6) {
+        return NextResponse.json(
+          { error: "Password must be at least 6 characters" },
+          { status: 400 }
+        )
+      }
+
+      // Update password and clear OTP
+      const passwordHash = await hashPassword(newPassword)
+      await prisma.profile.update({
+        where: { id: user.id },
+        data: {
+          passwordHash,
+          otpCode: null,
+          otpExpiresAt: null,
+        }
+      })
+
+      return NextResponse.json({
+        message: "Password reset successful. You can now log in."
+      })
+    }
+
     // Send OTP for password reset
     const resetOtp = generateOTP()
-    await db.profile.update({
+    await prisma.profile.update({
       where: { id: user.id },
       data: {
         otpCode: resetOtp,
         otpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
       }
     })
-    
     await sendPasswordResetEmail(email, resetOtp)
 
     return NextResponse.json({
