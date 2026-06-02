@@ -9,8 +9,22 @@ import {
   Send, 
   Bot, 
   User,
+  Sparkles,
+  TrendingUp,
+  Wallet,
+  Users,
+  HelpCircle,
+  Shield,
+  Clock,
+  DollarSign,
+  Zap,
+  Lock,
+  TrendingDown,
+  Repeat,
   ChevronUp,
   ChevronDown,
+  Minimize2,
+  Maximize2,
   Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -41,7 +55,7 @@ const quickActions: QuickAction[] = [
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
-  const [showQuickActions, setShowQuickActions] = useState(true)
+  const [showQuickActions, setShowQuickActions] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -195,45 +209,50 @@ export function Chatbot() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Actions - Enhanced and Collapsible */}
+      {/* Quick Actions - Compact and Collapsible */}
       <div className="border-t border-border bg-gradient-to-b from-secondary/50 to-secondary/20 flex-shrink-0">
         <button
           onClick={() => setShowQuickActions(!showQuickActions)}
-          className="w-full px-4 py-3 flex items-center justify-between hover:bg-secondary/50 transition-colors duration-200 group"
+          className="w-full px-4 py-2 flex items-center justify-between hover:bg-secondary/70 transition-colors duration-200 group"
         >
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            Quick Questions ({quickActions.length})
+            Need Help? Quick Questions
           </p>
-          <div className={cn(
-            "transition-transform duration-300",
-            showQuickActions ? "rotate-180" : ""
-          )}>
+          <div className="flex items-center gap-2">
             {showQuickActions ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+              <>
+                <ChevronUp className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+                <span className="text-xs text-muted-foreground">(Hide)</span>
+              </>
             ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+              <>
+                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+                <span className="text-xs text-muted-foreground">(Show {quickActions.length})</span>
+              </>
             )}
           </div>
         </button>
 
         {showQuickActions && (
-          <div className="px-4 pb-3 flex flex-wrap gap-2 max-h-28 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+          <div className="px-4 pb-3 flex flex-wrap gap-2 max-h-32 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
             {quickActions.map((action, idx) => (
               <Button
                 key={idx}
                 variant="outline"
                 size="sm"
-                className="text-xs gap-1.5 h-8 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 font-medium"
-                onClick={() => handleSend(action.query)}
+                className="text-xs gap-1 h-7 px-2.5 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 font-medium whitespace-nowrap"
+                onClick={() => {
+                  handleSend(action.query)
+                  setShowQuickActions(false)
+                }}
                 disabled={isTyping}
               >
                 {action.icon}
-                <span>{action.label}</span>
+                <span className="hidden sm:inline">{action.label}</span>
               </Button>
             ))}
           </div>
         )}
-      </div>
 
       {/* Input Section - Professional */}
       <div className="p-4 border-t border-border bg-gradient-to-r from-background to-secondary/30 flex gap-2 rounded-b-2xl">
