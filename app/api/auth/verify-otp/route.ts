@@ -3,6 +3,20 @@ import prisma from "@/lib/db"
 import { generateToken, createReferralChain } from "@/lib/auth"
 import { sendWelcomeEmail } from "@/lib/email"
 
+// Retry logic for database queries
+async function retryDatabaseCall<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn()
+    } catch (error) {
+      if (i === retries - 1) throw error
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, 100 * (i + 1)))
+    }
+  }
+  throw new Error("Max retries exceeded")
+}
+
 // POST /api/auth/verify-otp - Verify OTP and complete registration/login
 export async function POST(request: NextRequest) {
   try {
@@ -16,10 +30,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find user
-    const user = await prisma.profile.findUnique({
-      where: { email: email.toLowerCase() }
-    })
+    // Find user with retry
+    const user = await retryDatabaseCall(() =>
+      prisma.profile.findUnique({
+        where: { email: email.toLowerCase() }
+      })
+    )
 
     if (!user) {
       return NextResponse.json(
@@ -44,16 +60,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Clear OTP and mark as verified
+    // Clear OTP and mark as verified with retry
     const wasVerified = user.isVerified
-    await prisma.profile.update({
-      where: { id: user.id },
-      data: {
-        isVerified: true,
-        otpCode: null,
-        otpExpiresAt: null,
-      }
-    })
+    await retryDatabaseCall(() =>
+      prisma.profile.update({
+        where: { id: user.id },
+        data: {
+          isVerified: true,
+          otpCode: null,
+          otpExpiresAt: null,
+        }
+      })
+    )
 
     // If this is first verification (registration), create referral chain
     if (!wasVerified && user.referredBy) {
@@ -90,7 +108,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Verify OTP] Error:", error)
     return NextResponse.json(
-      { error: "Verification failed" },
+      { error: "Verification failed. Please try again." },
       { status: 500 }
     )
   }

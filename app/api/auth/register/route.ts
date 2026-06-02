@@ -3,6 +3,20 @@ import prisma from "@/lib/db"
 import { generateOTP, generateReferralCode, hashPassword } from "@/lib/auth"
 import { sendOTPEmail } from "@/lib/email"
 
+// Retry logic for database queries
+async function retryDatabaseCall<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn()
+    } catch (error) {
+      if (i === retries - 1) throw error
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, 100 * (i + 1)))
+    }
+  }
+  throw new Error("Max retries exceeded")
+}
+
 // POST /api/auth/register - Start registration with email OTP
 export async function POST(request: NextRequest) {
   try {
@@ -23,10 +37,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if email already exists
-    const existingUser = await prisma.profile.findUnique({
-      where: { email: email.toLowerCase() }
-    })
+    // Check if email already exists with retry
+    const existingUser = await retryDatabaseCall(() =>
+      prisma.profile.findUnique({
+        where: { email: email.toLowerCase() }
+      })
+    )
 
     if (existingUser && existingUser.isVerified) {
       return NextResponse.json(
@@ -35,12 +51,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find referrer if code provided
+    // Find referrer if code provided with retry
     let referrerId: string | null = null
     if (referralCode) {
-      const referrer = await prisma.profile.findUnique({
-        where: { referralCode: referralCode.toUpperCase() }
-      })
+      const referrer = await retryDatabaseCall(() =>
+        prisma.profile.findUnique({
+          where: { referralCode: referralCode.toUpperCase() }
+        })
+      )
       if (referrer) {
         referrerId = referrer.id
       }
@@ -54,31 +72,35 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hashPassword(password)
 
     if (existingUser && !existingUser.isVerified) {
-      // Update existing unverified user
-      await prisma.profile.update({
-        where: { id: existingUser.id },
-        data: {
-          passwordHash,
-          name,
-          referredBy: referrerId,
-          otpCode: otp,
-          otpExpiresAt,
-        }
-      })
+      // Update existing unverified user with retry
+      await retryDatabaseCall(() =>
+        prisma.profile.update({
+          where: { id: existingUser.id },
+          data: {
+            passwordHash,
+            name,
+            referredBy: referrerId,
+            otpCode: otp,
+            otpExpiresAt,
+          }
+        })
+      )
     } else {
-      // Create new user
-      await prisma.profile.create({
-        data: {
-          email: email.toLowerCase(),
-          passwordHash,
-          name,
-          referralCode: generateReferralCode(),
-          referredBy: referrerId,
-          otpCode: otp,
-          otpExpiresAt,
-          isVerified: false,
-        }
-      })
+      // Create new user with retry
+      await retryDatabaseCall(() =>
+        prisma.profile.create({
+          data: {
+            email: email.toLowerCase(),
+            passwordHash,
+            name,
+            referralCode: generateReferralCode(),
+            referredBy: referrerId,
+            otpCode: otp,
+            otpExpiresAt,
+            isVerified: false,
+          }
+        })
+      )
     }
 
     // Send OTP email
@@ -94,7 +116,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Register] Error:", error)
     return NextResponse.json(
-      { error: "Registration failed" },
+      { error: "Registration failed. Please try again." },
       { status: 500 }
     )
   }
