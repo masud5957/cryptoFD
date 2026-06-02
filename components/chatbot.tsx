@@ -105,18 +105,28 @@ export function Chatbot() {
         throw new Error(data.error || "Failed to get response")
       }
 
+      const responseContent = typeof data.response === 'string' 
+        ? data.response 
+        : JSON.stringify(data.response)
+
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         type: "bot",
-        content: data.response,
+        content: responseContent,
         timestamp: new Date()
       }])
     } catch (error) {
       console.error("Chat error:", error)
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === 'string' 
+          ? error 
+          : "Sorry, I couldn't process your request. Please try again or contact support@cryptofd.com."
+      
       setMessages(prev => [...prev, {
         id: (Date.now() + 2).toString(),
         type: "bot",
-        content: "Sorry, I couldn't process your request. Please try again or contact support@cryptofd.com.",
+        content: errorMessage,
         timestamp: new Date()
       }])
     } finally {
@@ -185,9 +195,13 @@ export function Chatbot() {
                   : "bg-secondary/80 text-foreground border border-border rounded-bl-none hover:bg-secondary transition-colors"
               )}
             >
-              {message.content.split('\n').map((line, idx) => (
-                <div key={idx}>{line}</div>
-              ))}
+              {typeof message.content === 'string' ? (
+                message.content.split('\n').map((line, idx) => (
+                  <div key={idx}>{line}</div>
+                ))
+              ) : (
+                <div>Unable to display message</div>
+              )}
             </div>
             {message.type === "user" && (
               <User className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
