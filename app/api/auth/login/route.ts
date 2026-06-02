@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { db } from "@/lib/db"
+import { prisma } from "@/lib/db"
 import { verifyPassword, generateToken, generateOTP } from "@/lib/auth"
 import { sendOTPEmail } from "@/lib/email"
 
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = await db.profile.findUnique({
+    const user = await prisma.profile.findUnique({
       where: { email: email.toLowerCase() }
     })
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     if (!user.isVerified) {
       // Send new OTP for verification
       const newOtp = generateOTP()
-      await db.profile.update({
+      await prisma.profile.update({
         where: { id: user.id },
         data: {
           otpCode: newOtp,
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Clear OTP
-      await db.profile.update({
+      await prisma.profile.update({
         where: { id: user.id },
         data: { otpCode: null, otpExpiresAt: null }
       })
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     // First step: Send OTP for login
     const loginOtp = generateOTP()
-    await db.profile.update({
+    await prisma.profile.update({
       where: { id: user.id },
       data: {
         otpCode: loginOtp,

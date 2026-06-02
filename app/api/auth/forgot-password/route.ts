@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/db"
+import { prisma } from "@/lib/db"
 import { generateOTP, hashPassword } from "@/lib/auth"
 import { sendPasswordResetEmail } from "@/lib/email"
 
