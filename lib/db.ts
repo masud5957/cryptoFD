@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 
+// Force reconnection to new Render database - timestamp: 2026-06-02
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
