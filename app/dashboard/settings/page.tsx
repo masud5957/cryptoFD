@@ -100,7 +100,7 @@ export default async function SettingsPage() {
         email={user.email || ""}
         fullName={profile?.name || ""}
         phone={profile?.phone || ""}
-        avatarUrl={profile?.profilePhoto || ""}
+        avatarUrl={(profile as any)?.profilePhoto || ""}
         usdtAddress={profile?.usdtAddress || ""}
       />
     </div>
