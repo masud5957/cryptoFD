@@ -87,15 +87,6 @@ export default function AboutPage() {
           </Card>
         ))}
       </div>
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
-                <stat.icon className="w-5 h-5 text-primary" />
-              </div>
-              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
       {/* Our Story */}
       <Card className="border-border/50 bg-card rounded-xl sm:rounded-2xl">
