@@ -242,21 +242,22 @@ export function Chatbot() {
         </button>
 
         {showQuickActions && (
-          <div className="px-2 sm:px-4 pb-2 sm:pb-3 flex flex-wrap gap-1 sm:gap-2 animate-in slide-in-from-top-2 duration-200">
+          <div className="px-2 sm:px-4 pb-2 sm:pb-4 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 animate-in slide-in-from-top-2 duration-200">
             {quickActions.map((action, idx) => (
               <Button
                 key={idx}
                 variant="outline"
                 size="sm"
-                className="text-[9px] sm:text-xs gap-0.5 h-6 sm:h-7 px-1.5 sm:px-2.5 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 font-medium whitespace-nowrap flex-shrink-0"
+                className="text-[10px] sm:text-xs h-auto py-2 sm:py-2.5 px-2.5 sm:px-3 rounded-lg sm:rounded-md hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 font-medium whitespace-normal text-left justify-start gap-2 flex items-start"
                 onClick={() => {
                   handleSend(action.query)
                   setShowQuickActions(false)
                 }}
                 disabled={isTyping}
+                title={action.label}
               >
-                {action.icon}
-                <span className="hidden xs:inline">{action.label}</span>
+                <span className="flex-shrink-0 mt-0.5">{action.icon}</span>
+                <span className="flex-1 line-clamp-2 break-words">{action.label}</span>
               </Button>
             ))}
           </div>
