@@ -124,7 +124,7 @@ export default async function TransactionsPage() {
   const deposits = transactions.filter((t) => t.type === "deposit")
   const withdrawals = transactions.filter((t) => t.type === "withdrawal")
   const fdTransactions = transactions.filter((t) => t.type === "fd_investment" || t.type === "fd_earning" || t.type === "fd_maturity")
-  const referralTransactions = transactions.filter((t) => t.type === "referral_earning" || t.type === "referral_commission")
+  const referralTransactions = transactions.filter((t) => (t.type as string) === "referral_earning" || (t.type as string) === "referral_commission")
 
   // Calculate totals
   const totalDeposits = deposits.filter(t => t.status === "completed").reduce((acc, t) => acc + Math.abs(Number(t.amount)), 0)
