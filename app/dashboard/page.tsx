@@ -27,9 +27,9 @@ export default async function DashboardPage() {
   ])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10">
       {/* Premium Welcome Header with Animated Background */}
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-primary/15 via-primary/5 to-accent/15 border border-primary/30 p-4 sm:p-8 group">
+      <div className="relative overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl bg-gradient-to-r from-primary/15 via-primary/5 to-accent/15 border border-primary/30 p-4 sm:p-6 lg:p-8 group">
         {/* Animated background elements */}
         <div className="absolute top-0 right-0 w-40 sm:w-64 h-40 sm:h-64 bg-primary/10 rounded-full blur-3xl -mr-16 sm:-mr-32 -mt-16 sm:-mt-32 group-hover:scale-110 transition-transform duration-500"></div>
         <div className="absolute bottom-0 left-10 sm:left-20 w-32 sm:w-40 h-32 sm:h-40 bg-accent/10 rounded-full blur-2xl -mb-16 sm:-mb-20 -ml-16 sm:-ml-20 group-hover:scale-125 transition-transform duration-500"></div>
