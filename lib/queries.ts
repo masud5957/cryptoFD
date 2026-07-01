@@ -162,12 +162,11 @@ export async function getTeamStats(): Promise<TeamStats[]> {
   // Commission rates by level
   const commissionRates: Record<number, number> = { 1: 10, 2: 5, 3: 2 }
 
-  // Get all transactions for referred users (both referral_earning and referral_commission)
-  const referredUserIds = referrals.map(r => r.referredId)
-  const transactions = await prisma.transaction.findMany({
+  // Get all referral_commission transactions for THIS user (the referrer)
+  const myCommissions = await prisma.transaction.findMany({
     where: {
-      userId: { in: referredUserIds },
-      type: { in: ["referral_earning", "referral_commission"] }
+      userId: user.id,
+      type: "referral_commission" as string
     }
   })
 
@@ -176,20 +175,28 @@ export async function getTeamStats(): Promise<TeamStats[]> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const ref of referrals as any[]) {
-    const existing = statsMap.get(ref.level) || {
-      level: ref.level,
+    const level = ref.level
+    const existing = statsMap.get(level) || {
+      level,
       count: 0,
       totalEarned: 0,
-      commissionRate: commissionRates[ref.level] || 0
+      commissionRate: commissionRates[level] || 0
     }
     existing.count++
-    
-    // Calculate earnings from transactions for this referral user
-    const userTransactions = transactions.filter(t => t.userId === ref.referredId)
-    const earnings = userTransactions.reduce((sum, t) => sum + Number(t.amount || 0), 0)
-    existing.totalEarned += earnings
-    
-    statsMap.set(ref.level, existing)
+    statsMap.set(level, existing)
+  }
+
+  // Sum all commissions by level
+  for (const transaction of myCommissions) {
+    // Extract level from description: "Level 1 referral commission (10%)"
+    const levelMatch = transaction.description?.match(/Level (\d)/);
+    if (levelMatch) {
+      const level = parseInt(levelMatch[1]);
+      const stat = statsMap.get(level);
+      if (stat) {
+        stat.totalEarned += Number(transaction.amount || 0);
+      }
+    }
   }
 
   return Array.from(statsMap.values()).sort((a, b) => a.level - b.level)
