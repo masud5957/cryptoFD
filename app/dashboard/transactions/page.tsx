@@ -29,7 +29,8 @@ const typeConfig: Record<string, { icon: typeof Layers; color: string; label: st
   withdrawal: { icon: ArrowUpFromLine, color: "bg-orange-500/10 text-orange-500 border-orange-500/20", label: "Withdrawal" },
   fd_investment: { icon: Layers, color: "bg-blue-500/10 text-blue-500 border-blue-500/20", label: "FD Investment" },
   fd_earning: { icon: Percent, color: "bg-green-500/10 text-green-500 border-green-500/20", label: "FD Earning" },
-  referral_earning: { icon: TrendingUp, color: "bg-purple-500/10 text-purple-500 border-purple-500/20", label: "Referral" },
+  referral_earning: { icon: TrendingUp, color: "bg-purple-500/10 text-purple-500 border-purple-500/20", label: "Referral Earning" },
+  referral_commission: { icon: TrendingUp, color: "bg-purple-500/10 text-purple-500 border-purple-500/20", label: "Referral Commission" },
   fd_maturity: { icon: Coins, color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", label: "FD Maturity" },
 }
 
@@ -123,7 +124,7 @@ export default async function TransactionsPage() {
   const deposits = transactions.filter((t) => t.type === "deposit")
   const withdrawals = transactions.filter((t) => t.type === "withdrawal")
   const fdTransactions = transactions.filter((t) => t.type === "fd_investment" || t.type === "fd_earning" || t.type === "fd_maturity")
-  const referralTransactions = transactions.filter((t) => t.type === "referral_earning")
+  const referralTransactions = transactions.filter((t) => t.type === "referral_earning" || t.type === "referral_commission")
 
   // Calculate totals
   const totalDeposits = deposits.filter(t => t.status === "completed").reduce((acc, t) => acc + Math.abs(Number(t.amount)), 0)
