@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm exec prisma db push && next build && cd backend-worker && npm run build",
-    "start": "node scripts/start-all.js",
+    "build": "next build",
+    "start": "pnpm exec prisma db push && cd backend-worker && npm run build && node scripts/start-all.js",
     "lint": "eslint ."
   },
   "dependencies": {
