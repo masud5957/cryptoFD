@@ -6,7 +6,7 @@ export async function processFDEarnings() {
     const now = new Date();
 
     // Get all active FDs
-    const activeFDs = await prisma.userFD.findMany({
+    const activeFDs = await prisma.userFd.findMany({
       where: { status: "active" },
     });
 
@@ -64,7 +64,7 @@ export async function processFDEarnings() {
         // Update FD record
         const newTotalEarned = Number(fd.totalEarned) + earningsToPay;
         
-        await prisma.userFD.update({
+        await prisma.userFd.update({
           where: { id: fd.id },
           data: {
             totalEarned: newTotalEarned,
@@ -154,7 +154,7 @@ async function handleFDMaturity(fd: any) {
     });
 
     // Mark FD as completed
-    await prisma.userFD.update({
+    await prisma.userFd.update({
       where: { id: fd.id },
       data: {
         status: "completed",
