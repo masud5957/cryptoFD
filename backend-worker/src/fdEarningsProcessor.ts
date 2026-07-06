@@ -4,13 +4,17 @@ import { prisma, incrementBalance } from "./db";
 export async function processFDEarnings() {
   try {
     const now = new Date();
+    console.log(`[FDEarnings] Starting processor at ${now.toISOString()}`);
 
     // Get all active FDs
     const activeFDs = await prisma.userFd.findMany({
       where: { status: "active" },
     });
 
+    console.log(`[FDEarnings] Found ${activeFDs?.length || 0} active FDs`);
+
     if (!activeFDs || activeFDs.length === 0) {
+      console.log(`[FDEarnings] No active FDs to process`);
       return;
     }
 
@@ -38,8 +42,10 @@ export async function processFDEarnings() {
 
         // Check if 24 hours have passed since last payout
         const hoursSinceLastPayout = (now.getTime() - lastPayout.getTime()) / (1000 * 60 * 60);
+        console.log(`[FDEarnings] FD ${fd.id}: lastPayout=${lastPayout.toISOString()}, now=${now.toISOString()}, hours since=${hoursSinceLastPayout.toFixed(2)}`);
         
         if (hoursSinceLastPayout < 24) {
+          console.log(`[FDEarnings] FD ${fd.id}: Not ready yet (${hoursSinceLastPayout.toFixed(2)} hours < 24)`);
           continue; // Not yet time for daily payout
         }
 
