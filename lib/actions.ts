@@ -46,19 +46,24 @@ export async function createFD(planId: string, amount: number) {
   endDate.setDate(endDate.getDate() + plan.durationDays)
   
   try {
-    // Use transaction for atomic operations
+    // Keep the FD, balance update, and first-FD commissions atomic.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await prisma.$transaction(async (tx: any) => {
-      // Update balance: deduct from wallet, add to locked
+      const existingFD = await tx.userFd.findFirst({
+        where: { userId: user.id },
+        select: { id: true },
+      })
+
+      const isFirstFD = !existingFD
+
       await tx.profile.update({
         where: { id: user.id },
         data: {
           walletBalance: { decrement: amount },
           lockedBalance: { increment: amount },
-        }
+        },
       })
 
-      // Create the FD
       const fd = await tx.userFd.create({
         data: {
           userId: user.id,
@@ -70,10 +75,9 @@ export async function createFD(planId: string, amount: number) {
           lastPayoutDate: new Date(),
           totalEarned: 0,
           status: "active",
-        }
+        },
       })
-      
-      // Create transaction record
+
       await tx.transaction.create({
         data: {
           userId: user.id,
@@ -81,60 +85,63 @@ export async function createFD(planId: string, amount: number) {
           amount: -amount,
           status: "completed",
           description: `Investment in ${plan.name} plan`,
-        }
+        },
       })
 
-      return fd
+      if (isFirstFD) {
+        await processReferralCommissions(tx, user.id, fd.id, amount)
+      }
+
+      return { fd, isFirstFD }
     })
-    
-    // Process referral commissions (outside transaction for performance)
-    await processReferralCommissions(user.id, result.id, amount)
-    
+
     revalidatePath("/dashboard")
     revalidatePath("/dashboard/my-fds")
-    
-    return { success: true, fdId: result.id }
+    revalidatePath("/dashboard/wallet")
+    revalidatePath("/dashboard/transactions")
+
+    return { success: true, fdId: result.fd.id }
   } catch (error) {
     console.error("Create FD error:", error)
     return { error: "Failed to create FD" }
   }
 }
 
-// Referral commissions - 3 levels: 10%, 5%, 2%
-async function processReferralCommissions(userId: string, fdId: string, fdAmount: number) {
+// Referral commissions are paid only when the referred user creates their first FD.
+async function processReferralCommissions(
+  tx: any,
+  userId: string,
+  fdId: string,
+  fdAmount: number,
+) {
   const commissionRates: Record<number, number> = { 1: 10, 2: 5, 3: 2 }
-
-  // Get referrers for this user
-  const referrers = await prisma.referral.findMany({
-    where: { referredId: userId }
+  const referrers = await tx.referral.findMany({
+    where: { referredId: userId },
   })
-  
-  if (referrers.length === 0) return
-  
+
   for (const ref of referrers) {
     const rate = commissionRates[ref.level] || 0
     if (rate === 0) continue
 
     const commission = (fdAmount * rate) / 100
-    
-    // Update referral_earnings and wallet_balance for referrer
-    await prisma.profile.update({
+
+    await tx.profile.update({
       where: { id: ref.referrerId },
       data: {
         referralEarnings: { increment: commission },
         walletBalance: { increment: commission },
-      }
+      },
     })
-    
-    // Create transaction for referrer
-    await prisma.transaction.create({
+
+    await tx.transaction.create({
       data: {
         userId: ref.referrerId,
         type: "referral_commission",
         amount: commission,
         status: "completed",
         description: `Level ${ref.level} referral commission (${rate}%)`,
-      }
+        referenceId: fdId,
+      },
     })
   }
 }
